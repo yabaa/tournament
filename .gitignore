@@ -7,6 +7,10 @@
 #intellij
 .idea
 
+### Gradle ###
+.gradle
+/build/
+
 # BlueJ files
 *.ctxt
 
