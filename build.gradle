@@ -44,3 +44,7 @@ jar {
         attributes 'Main-Class': mainClassName
     }
 }
+
+run {
+    args = ['server']
+}
