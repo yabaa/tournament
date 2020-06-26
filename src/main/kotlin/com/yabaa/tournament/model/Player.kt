@@ -1,5 +1,4 @@
 package com.yabaa.tournament.model
 
-class Player(val pseudo: String) {
-    var score: Int = 0;
-}
+
+class Player(val pseudo: String? = null, val score: Int ? = 0)

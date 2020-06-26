@@ -10,5 +10,6 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
         println("Running tournament server!")
         val playerController = PlayerController()
         environment.jersey().register(playerController)
+
     }
 }

@@ -12,10 +12,6 @@ buildscript {
     }
 }
 
-plugins {
-    id 'java'
-}
-
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
@@ -26,6 +22,8 @@ sourceCompatibility = 1.8
 // Set our project variables
 project.ext {
     dropwizard_version = '2.0.10'
+    junit_version = '5.7.0-M1'
+    assertj_version = '3.16.1'
 }
 
 repositories {
@@ -37,12 +35,22 @@ dependencies {
             "io.dropwizard:dropwizard-core:$dropwizard_version",
             "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     )
+    testCompile(
+            "io.dropwizard:dropwizard-testing:$dropwizard_version",
+            "org.junit.jupiter:junit-jupiter-api:$junit_version",
+            "org.assertj:assertj-core:$assertj_version"
+    )
+    testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit_version")
 }
 
 jar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
+}
+
+test {
+    useJUnitPlatform()
 }
 
 run {
