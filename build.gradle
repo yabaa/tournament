@@ -25,6 +25,7 @@ project.ext {
     junit_version = '5.7.0-M1'
     assertj_version = '3.16.1'
     mongodb_version = '4.0.4'
+    testcontainer_version = '1.14.3'
 }
 
 repositories {
@@ -40,7 +41,12 @@ dependencies {
     testCompile(
             "io.dropwizard:dropwizard-testing:$dropwizard_version",
             "org.junit.jupiter:junit-jupiter-api:$junit_version",
-            "org.assertj:assertj-core:$assertj_version"
+            "org.junit.jupiter:junit-jupiter-params:$junit_version",
+            "org.assertj:assertj-core:$assertj_version",
+            "org.testcontainers:testcontainers:$testcontainer_version",
+            "org.testcontainers:mongodb:$testcontainer_version",
+            "org.testcontainers:junit-jupiter:$testcontainer_version"
+
     )
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit_version")
 }

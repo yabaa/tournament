@@ -37,10 +37,7 @@ class MongoDBConnectionFactory(var mongoDBConnection: MongoDBConnection? = null)
     private fun getServers(): List<ServerAddress?>? {
         val seeds = mongoDBConnection!!.seeds
         return seeds!!.stream()
-            .map { seed: Seed ->
-                val serverAddress = ServerAddress(seed.host, seed.port!!)
-                serverAddress
-            }
+            .map { seed: Seed -> ServerAddress(seed.host, seed.port!!) }
             .collect(Collectors.toList())
     }
 }

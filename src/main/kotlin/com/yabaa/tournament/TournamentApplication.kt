@@ -4,9 +4,9 @@ import com.yabaa.tournament.configuration.TournamentApplicationConfiguration
 import com.yabaa.tournament.controller.PlayerController
 import com.yabaa.tournament.database.MongoDBConnectionFactory
 import com.yabaa.tournament.database.MongoDBManaged
+import com.yabaa.tournament.health.TournamentDBHealthCheck
 import io.dropwizard.Application
 import io.dropwizard.setup.Environment
-
 
 class TournamentApplication : Application<TournamentApplicationConfiguration>() {
     override fun run(configuration: TournamentApplicationConfiguration, environment: Environment) {
@@ -19,12 +19,12 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
 //                .getDatabase(configuration.mongoDBConnection!!.database)
 //                .getCollection("donuts")
 //        )
-        environment.lifecycle().manage(mongoDBManaged)
 //        environment.jersey().register(DonutResource(donutDAO))
-//        environment.healthChecks().register(
-//            "DropwizardMongoDBHealthCheck",
-//            DropwizardMongoDBHealthCheck(mongoDBManagerConn.getClient())
-//        )
+        environment.lifecycle().manage(mongoDBManaged)
         environment.jersey().register(playerController)
+        environment.healthChecks().register(
+            "TournamentDBHealthCheck",
+            TournamentDBHealthCheck(mongoDBManagerConn.getClient()!!)
+        )
     }
 }

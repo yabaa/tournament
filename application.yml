@@ -1,0 +1,8 @@
+mongoDBConnection:
+  credentials:
+    username: "usr_tournament"
+    password: "b3tcl1c"
+  seeds:
+    - host: "localhost"
+      port: 27017
+  database: "tournament"
