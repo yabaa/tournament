@@ -1,6 +1,6 @@
 package com.yabaa.tournament.database
 
-import com.mongodb.reactivestreams.client.MongoClient
+import com.mongodb.client.MongoClient
 import io.dropwizard.lifecycle.Managed
 
 class MongoDBManaged (

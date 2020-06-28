@@ -26,6 +26,7 @@ project.ext {
     assertj_version = '3.16.1'
     mongodb_version = '4.0.4'
     testcontainer_version = '1.14.3'
+    mockito_version = '3.3.3'
 }
 
 repositories {
@@ -36,7 +37,7 @@ dependencies {
     compile(
             "io.dropwizard:dropwizard-core:$dropwizard_version",
             "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version",
-            "org.mongodb:mongodb-driver-reactivestreams:$mongodb_version"
+            "org.mongodb:mongodb-driver-sync:$mongodb_version"
     )
     testCompile(
             "io.dropwizard:dropwizard-testing:$dropwizard_version",
@@ -45,8 +46,8 @@ dependencies {
             "org.assertj:assertj-core:$assertj_version",
             "org.testcontainers:testcontainers:$testcontainer_version",
             "org.testcontainers:mongodb:$testcontainer_version",
-            "org.testcontainers:junit-jupiter:$testcontainer_version"
-
+            "org.testcontainers:junit-jupiter:$testcontainer_version",
+            "org.mockito:mockito-core:$mockito_version"
     )
     testRuntime("org.junit.jupiter:junit-jupiter-engine:$junit_version")
 }

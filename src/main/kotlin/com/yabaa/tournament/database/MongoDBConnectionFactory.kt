@@ -3,13 +3,12 @@ package com.yabaa.tournament.database
 import com.mongodb.MongoClientSettings
 import com.mongodb.MongoCredential
 import com.mongodb.ServerAddress
+import com.mongodb.client.MongoClient
+import com.mongodb.client.MongoClients
 import com.mongodb.connection.ClusterSettings
-import com.mongodb.reactivestreams.client.MongoClient
-import com.mongodb.reactivestreams.client.MongoClients
 import com.yabaa.tournament.database.configuration.Credentials
 import com.yabaa.tournament.database.configuration.MongoDBConnection
 import com.yabaa.tournament.database.configuration.Seed
-import java.net.InetAddress
 import java.util.stream.Collectors
 
 

@@ -1,7 +1,7 @@
 package com.yabaa.tournament.health
 
 import com.codahale.metrics.health.HealthCheck
-import com.mongodb.reactivestreams.client.MongoClient
+import com.mongodb.client.MongoClient
 import org.bson.Document
 
 
