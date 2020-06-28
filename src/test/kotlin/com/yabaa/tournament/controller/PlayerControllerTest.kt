@@ -29,12 +29,6 @@ class PlayerControllerTest {
         val playerController: ResourceExtension = ResourceExtension.builder()
             .addResource(PlayerController(playerRepository))
             .build()
-
-        @After
-        fun tearDown() {
-            Mockito.reset<Any>(playerRepository)
-        }
-
     }
 
     @Test
