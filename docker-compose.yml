@@ -1,0 +1,45 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo
+    restart: always
+    container_name: tournament-mongodb
+    environment:
+      MONGO_INITDB_DATABASE: tournament
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin
+    volumes:
+      - ./src/main/resources/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-volume:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      - tournament-mongodb-network
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    ports:
+      - "8080:80"
+      - "443:443"
+    networks:
+      - tournament-mongodb-network
+
+  tournament:
+    image: openjdk:8-jre
+    container_name: tournament-service
+    volumes:
+      - ./build/libs/tournament-1.0-SNAPSHOT-standalone.jar:/backend/tournament-1.0.0-SNAPSHOT.jar
+      - ./src/main/resources/application.yml:/backend/application.yml
+    working_dir: /backend
+    command: ["java", "-jar", "tournament-1.0.0-SNAPSHOT.jar", "server", "application.yml"]
+    ports:
+      - "8090:8080"
+      - "8091:8081"
+    networks:
+      - tournament-mongodb-network
+
+networks:
+  tournament-mongodb-network:

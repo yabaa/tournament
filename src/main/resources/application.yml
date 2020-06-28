@@ -1,0 +1,18 @@
+server:
+  maxThreads: 512
+  applicationContextPath: /tournament-service
+  applicationConnectors:
+    - type: http
+      port: 8080
+  adminConnectors:
+    - type: http
+      port: 8081
+
+mongoDBConnection:
+  credentials:
+    username: "usr_tournament"
+    password: "b3tcl1c"
+  seeds:
+    - host: "tournament-mongodb"
+      port: 27017
+  database: "tournament"

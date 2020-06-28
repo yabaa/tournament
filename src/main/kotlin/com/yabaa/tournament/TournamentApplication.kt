@@ -26,4 +26,5 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
             TournamentDBHealthCheck(mongoDBManagerConn.getClient()!!)
         )
     }
+
 }

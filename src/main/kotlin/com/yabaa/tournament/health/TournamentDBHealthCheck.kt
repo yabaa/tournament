@@ -9,7 +9,7 @@ class TournamentDBHealthCheck(private val mongoClient: MongoClient) : HealthChec
 
     override fun check(): Result {
         try {
-            val document = mongoClient.getDatabase("tournament").runCommand(Document("buildInfo", 1))
+            mongoClient.getDatabase("tournament").runCommand(Document("buildInfo", 1))
                 ?: return Result.unhealthy("Can not perform operation buildInfo in Database.")
         } catch (e: Exception) {
             return Result.unhealthy("Can not get the information from database.")
