@@ -13,6 +13,10 @@ Coding test to manage tournament players and scores.
 
 TODO
 
+## Application HealthCheck
+
+Application health is visible at `http://localhost:8081/healthcheck`
+
 ## Project Structure
 
 ### Code

@@ -37,7 +37,7 @@ services:
     command: ["java", "-jar", "tournament-1.0.0-SNAPSHOT.jar", "server", "application.yml"]
     ports:
       - "8090:8080"
-      - "8091:8081"
+      - "8081:8081"
     networks:
       - tournament-mongodb-network
 
