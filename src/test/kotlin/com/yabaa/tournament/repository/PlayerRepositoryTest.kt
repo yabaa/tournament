@@ -13,21 +13,25 @@ import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.testcontainers.containers.MongoDBContainer
+import org.testcontainers.containers.DockerComposeContainer
+import org.testcontainers.containers.wait.strategy.Wait
+import java.io.File
 
 
 class PlayerRepositoryTest {
     companion object {
         private var playerCollection: MongoCollection<Document>? = null
 
-        private val instance: MongoDBContainer = MongoDBContainer()
-            .withExposedPorts(27017)
+
+        val instance: KGenericContainer = KGenericContainer(File("./src/test/resources/docker-compose.yml"))
+            .withLocalCompose(true)
+            .waitingFor("testing-mongodb_1", Wait.forListeningPort())
 
         @BeforeAll
         @JvmStatic
         internal fun beforeAll() {
             instance.start()
-            val mongoClient: MongoClient = MongoClients.create(ConnectionString("mongodb://admin:admin@localhost:27017"))
+            val mongoClient: MongoClient = MongoClients.create(ConnectionString("mongodb://admin:admin@localhost:12345"))
             val database = mongoClient.getDatabase("testingDB")
             playerCollection = database.getCollection("players")
         }
@@ -37,7 +41,6 @@ class PlayerRepositoryTest {
         internal fun afterAll() {
             instance.stop()
         }
-
 
     }
 
@@ -131,4 +134,7 @@ class PlayerRepositoryTest {
             .isEqualToComparingFieldByField(newPlayer)
     }
 
+
 }
+
+class KGenericContainer(file: File) : DockerComposeContainer<KGenericContainer>(file)

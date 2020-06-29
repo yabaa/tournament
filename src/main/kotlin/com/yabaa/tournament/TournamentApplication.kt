@@ -19,11 +19,10 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
                 .getDatabase(configuration.mongoDBConnection?.database!!)
                 .getCollection("players")
         )
-        environment.jersey().register(PlayerController(playerRepository))
         environment.lifecycle().manage(mongoDBManaged)
-        environment.healthChecks().register(
-            "TournamentDBHealthCheck",
-            TournamentDBHealthCheck(mongoDBManagerConn.getClient()!!)
+        environment.jersey().register(PlayerController(playerRepository))
+        environment.healthChecks()
+            .register("TournamentDBHealthCheck", TournamentDBHealthCheck(mongoDBManagerConn.getClient()!!)
         )
     }
 
