@@ -2,6 +2,7 @@ package com.yabaa.tournament.controller
 
 import com.mongodb.client.result.DeleteResult
 import com.yabaa.tournament.model.Player
+import com.yabaa.tournament.model.PlayerWithRank
 import com.yabaa.tournament.repository.PlayerRepository
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport
 import io.dropwizard.testing.junit5.ResourceExtension
@@ -52,17 +53,17 @@ class PlayerControllerTest {
     fun `can GET one player successfully`() {
         //given
         val playerId = ObjectId("5ef8299deace171074fb61ed")
-        Mockito.`when`(playerRepository.getOne(playerId)).thenReturn(Player(playerId, "test", 4))
+        Mockito.`when`(playerRepository.getOne(playerId)).thenReturn(PlayerWithRank(playerId, "test", 4, 1))
 
         //when
         val response = playerController.target("/players/$playerId").request().get()!!
 
         //then
         assertThat(response.status).isEqualTo(200)
-        val player = response.readEntity(Player::class.java)
+        val player = response.readEntity(PlayerWithRank::class.java)
         assertThat(player)
-            .extracting("pseudo", "score")
-            .containsExactly("test", 4)
+            .extracting("pseudo", "score", "rank")
+            .containsExactly("test", 4, 1)
     }
 
     @Test

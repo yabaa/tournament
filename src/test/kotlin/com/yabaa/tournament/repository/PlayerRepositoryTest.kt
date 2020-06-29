@@ -9,20 +9,21 @@ import com.yabaa.tournament.model.Player
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.tuple
 import org.bson.Document
-import org.junit.AfterClass
-import org.junit.BeforeClass
-import org.junit.Test
+import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.Test
 import org.testcontainers.containers.MongoDBContainer
 
 
-class TestcontainersTests {
+class PlayerRepositoryTest {
     companion object {
         private var playerCollection: MongoCollection<Document>? = null
 
         private val instance: MongoDBContainer = MongoDBContainer()
             .withExposedPorts(27017)
 
-        @BeforeClass
+        @BeforeAll
         @JvmStatic
         internal fun beforeAll() {
             instance.start()
@@ -31,12 +32,18 @@ class TestcontainersTests {
             playerCollection = database.getCollection("players")
         }
 
-        @AfterClass
+        @AfterAll
         @JvmStatic
         internal fun afterAll() {
             instance.stop()
         }
 
+
+    }
+
+    @AfterEach
+    internal fun tearDown() {
+        playerCollection?.deleteMany(BasicDBObject())
     }
 
     @Test
@@ -62,7 +69,6 @@ class TestcontainersTests {
                 tuple("player3", 15),
                 tuple("player1", 10)
             )
-        playerCollection?.deleteMany(BasicDBObject()) //TODO: make it as @AfterEach or @BeforeEach
     }
 
     @Test
@@ -84,10 +90,8 @@ class TestcontainersTests {
         //then
         assertThat(foundPlayer)
             .isNotNull
-            .extracting("pseudo", "score")
-            .containsExactly("player1", 10)
-
-        playerCollection?.deleteMany(BasicDBObject()) //TODO: make it as @AfterEach or @BeforeEach
+            .extracting("pseudo", "score", "rank")
+            .containsExactly("player1", 10, 3)
     }
 
     @Test
@@ -104,9 +108,7 @@ class TestcontainersTests {
         val createdPlayer = playerRepository.getOne(createdPlayerId!!)
 
         assertThat(createdPlayer)
-            .isEqualToIgnoringGivenFields(player1, "id")
-
-        playerCollection?.deleteMany(BasicDBObject()) //TODO: make it as @AfterEach or @BeforeEach
+            .isEqualToIgnoringGivenFields(player1, "id", "rank")
     }
 
     @Test
@@ -127,8 +129,6 @@ class TestcontainersTests {
         assertThat(updatedPlayer)
             .isNotNull
             .isEqualToComparingFieldByField(newPlayer)
-
-        playerCollection?.deleteMany(BasicDBObject()) //TODO: make it as @AfterEach or @BeforeEach
     }
 
 }

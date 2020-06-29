@@ -3,14 +3,15 @@ package com.yabaa.tournament.repository
 import com.mongodb.BasicDBObject
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
+import com.mongodb.client.model.Aggregates.group
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Sorts.descending
 import com.mongodb.client.model.Sorts.orderBy
 import com.mongodb.client.result.DeleteResult
-import com.mongodb.client.result.UpdateResult
 import com.yabaa.tournament.mapper.PlayerMapper
 import com.yabaa.tournament.model.Player
+import com.yabaa.tournament.model.PlayerWithRank
 import org.bson.Document
 import org.bson.types.ObjectId
 import java.util.*
@@ -33,10 +34,19 @@ open class PlayerRepository(private var players: MongoCollection<Document>? = nu
         return playersFound
     }
 
-    open fun getOne(id: ObjectId): Player? {
-        return Optional.ofNullable(players?.find(Document("_id", id))!!.first())
-            .map { player -> PlayerMapper.map(player) }
-            .orElse(null)
+    open fun getOne(id: ObjectId): PlayerWithRank? {
+        val sortOrder = orderBy(descending("score"))
+        var rank = 1
+        var player: PlayerWithRank? = null
+        //TODO: find a better way to rank the player, maybe using aggregate function
+        for (doc in players?.find()!!.sort(sortOrder)) {
+            if (doc.getObjectId("_id") == id) {
+                player = PlayerMapper.mapWithRank(doc, rank)
+                break
+            }
+            rank++
+        }
+        return player
     }
 
     open fun create(player: Player): ObjectId? {
