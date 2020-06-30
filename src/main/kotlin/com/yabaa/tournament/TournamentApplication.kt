@@ -1,7 +1,7 @@
 package com.yabaa.tournament
 
 import com.yabaa.tournament.configuration.TournamentApplicationConfiguration
-import com.yabaa.tournament.controller.PlayerController
+import com.yabaa.tournament.resources.PlayerResource
 import com.yabaa.tournament.database.MongoDBConnectionFactory
 import com.yabaa.tournament.database.MongoDBManaged
 import com.yabaa.tournament.health.TournamentDBHealthCheck
@@ -33,7 +33,7 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
                 .getCollection("players")
         )
         environment.lifecycle().manage(mongoDBManaged)
-        environment.jersey().register(PlayerController(playerRepository))
+        environment.jersey().register(PlayerResource(playerRepository))
         environment.healthChecks()
             .register("TournamentDBHealthCheck", TournamentDBHealthCheck(mongoDBManagerConn.getClient()!!)
         )

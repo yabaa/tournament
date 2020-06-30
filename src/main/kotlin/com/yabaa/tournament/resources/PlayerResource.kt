@@ -1,4 +1,4 @@
-package com.yabaa.tournament.controller
+package com.yabaa.tournament.resources
 
 import com.yabaa.tournament.model.Player
 import com.yabaa.tournament.repository.PlayerRepository
@@ -24,7 +24,7 @@ import javax.ws.rs.core.Response
 )
 @Path("/players")
 @Produces(MediaType.APPLICATION_JSON)
-class PlayerController(private val playerRepository: PlayerRepository? = null) {
+class PlayerResource(private val playerRepository: PlayerRepository? = null) {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)

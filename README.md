@@ -28,7 +28,7 @@ The overall code layout is:
 Within these directories things are organised by package:
 
 * DropWizardConfiguration in `com.yabaa.tournament.configuration`
-* Endpoints definitions in `com.yabaa.tournament.controller`
+* Endpoints definitions in `com.yabaa.tournament.resources`
 * Database configuration (MongoDB) in `com.yabaa.tournament.database`
 * Database HealthCheck in `com.yabaa.tournament.health`
 * Data transformation from MongoDB document to model `com.yabaa.tournament.mapper`

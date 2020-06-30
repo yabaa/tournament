@@ -1,4 +1,4 @@
-package com.yabaa.tournament.controller
+package com.yabaa.tournament.resources
 
 import com.mongodb.client.result.DeleteResult
 import com.yabaa.tournament.model.Player
@@ -9,7 +9,6 @@ import io.dropwizard.testing.junit5.ResourceExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.groups.Tuple
 import org.bson.types.ObjectId
-import org.junit.After
 import org.junit.ClassRule
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -21,14 +20,14 @@ import javax.ws.rs.core.MediaType
 
 
 @ExtendWith(DropwizardExtensionsSupport::class)
-class PlayerControllerTest {
+class PlayerResourceTest {
 
     companion object {
         val playerRepository = Mockito.mock(PlayerRepository::class.java)!!
 
         @ClassRule
         val playerController: ResourceExtension = ResourceExtension.builder()
-            .addResource(PlayerController(playerRepository))
+            .addResource(PlayerResource(playerRepository))
             .build()
     }
 

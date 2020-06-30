@@ -18,7 +18,7 @@ mongoDBConnection:
   database: "tournament"
 
 swagger:
-  resourcePackage: com.yabaa.tournament.controller
+  resourcePackage: com.yabaa.tournament.resources
   basePath: /tournament
   title: "Player API"
   version: v1
