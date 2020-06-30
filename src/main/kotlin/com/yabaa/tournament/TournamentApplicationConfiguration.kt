@@ -1,4 +1,4 @@
-package com.yabaa.tournament.configuration
+package com.yabaa.tournament
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.yabaa.tournament.database.configuration.MongoDBConnection

@@ -1,6 +1,5 @@
 package com.yabaa.tournament
 
-import com.yabaa.tournament.configuration.TournamentApplicationConfiguration
 import com.yabaa.tournament.resources.PlayerResource
 import com.yabaa.tournament.database.MongoDBConnectionFactory
 import com.yabaa.tournament.database.MongoDBManaged
