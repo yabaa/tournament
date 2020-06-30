@@ -19,7 +19,7 @@ import javax.ws.rs.core.Response
 
 
 @Api(
-    value = "Player Controller",
+    value = "Player Resource",
     description = "Player REST API to handle CRUD operations on players collection."
 )
 @Path("/players")

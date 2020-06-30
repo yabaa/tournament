@@ -7,12 +7,16 @@ Coding test to manage tournament players and scores.
 * Dropwizard 2.0.10
 * Kotlin 1.3.72
 * MongoDB
+* Swagger
 * Docker
 * Gradle
+* Nginx
 
 ## How to run it?
 
 To run the application, you need first to execute `./gradlew clean build`. And then you can execute `docker-compose up`.
+
+You can also run `./script.sh` which runs both commands for you, and then visit [swagger url](http://localhost:8080/tournament/swagger).
 
 ## Application HealthCheck
 

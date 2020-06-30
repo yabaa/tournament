@@ -3,11 +3,7 @@ package com.yabaa.tournament.database
 import com.mongodb.client.MongoClient
 import io.dropwizard.lifecycle.Managed
 
-class MongoDBManaged (
-
-    private val mongoClient: MongoClient
-
-) : Managed {
+class MongoDBManaged (private val mongoClient: MongoClient) : Managed {
 
     @Throws(Exception::class)
     override fun start() {
