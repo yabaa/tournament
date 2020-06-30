@@ -32,7 +32,7 @@ Within these directories things are organised by package:
 * Database configuration (MongoDB) in `com.yabaa.tournament.database`
 * Database HealthCheck in `com.yabaa.tournament.health`
 * Data transformation from MongoDB document to model `com.yabaa.tournament.mapper`
-* Entities that are persisted in our database `com.yabaa.tournament.model`
+* Entities that are persisted in our database `com.yabaa.tournament.api`
 * Interaction with the database `com.yabaa.tournament.repository`
 * `TournamentApplication` is the starter point for our Dropwizard application
 * `MainApp` is our entry point to run the TournamentApplication

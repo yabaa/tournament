@@ -1,6 +1,6 @@
 package com.yabaa.tournament.resources
 
-import com.yabaa.tournament.model.Player
+import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.repository.PlayerRepository
 import io.swagger.annotations.Api
 import org.bson.types.ObjectId

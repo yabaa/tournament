@@ -1,4 +1,4 @@
-package com.yabaa.tournament.model
+package com.yabaa.tournament.api
 
 import org.bson.types.ObjectId
 

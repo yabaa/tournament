@@ -5,7 +5,7 @@ import com.mongodb.ConnectionString
 import com.mongodb.client.MongoClient
 import com.mongodb.client.MongoClients
 import com.mongodb.client.MongoCollection
-import com.yabaa.tournament.model.Player
+import com.yabaa.tournament.api.Player
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.tuple
 import org.bson.Document

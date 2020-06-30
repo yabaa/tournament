@@ -1,8 +1,8 @@
 package com.yabaa.tournament.resources
 
 import com.mongodb.client.result.DeleteResult
-import com.yabaa.tournament.model.Player
-import com.yabaa.tournament.model.PlayerWithRank
+import com.yabaa.tournament.api.Player
+import com.yabaa.tournament.api.PlayerWithRank
 import com.yabaa.tournament.repository.PlayerRepository
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport
 import io.dropwizard.testing.junit5.ResourceExtension

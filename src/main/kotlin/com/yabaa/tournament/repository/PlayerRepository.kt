@@ -3,18 +3,16 @@ package com.yabaa.tournament.repository
 import com.mongodb.BasicDBObject
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoCursor
-import com.mongodb.client.model.Aggregates.group
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.ReturnDocument
 import com.mongodb.client.model.Sorts.descending
 import com.mongodb.client.model.Sorts.orderBy
 import com.mongodb.client.result.DeleteResult
 import com.yabaa.tournament.mapper.PlayerMapper
-import com.yabaa.tournament.model.Player
-import com.yabaa.tournament.model.PlayerWithRank
+import com.yabaa.tournament.api.Player
+import com.yabaa.tournament.api.PlayerWithRank
 import org.bson.Document
 import org.bson.types.ObjectId
-import java.util.*
 import kotlin.collections.ArrayList
 
 

@@ -1,7 +1,7 @@
 package com.yabaa.tournament.mapper
 
-import com.yabaa.tournament.model.Player
-import com.yabaa.tournament.model.PlayerWithRank
+import com.yabaa.tournament.api.Player
+import com.yabaa.tournament.api.PlayerWithRank
 import org.bson.Document
 
 object PlayerMapper {
