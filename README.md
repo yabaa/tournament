@@ -8,14 +8,19 @@ Coding test to manage tournament players and scores.
 * Kotlin 1.3.72
 * MongoDB
 * Docker
+* Gradle
 
 ## How to run it?
 
-TODO
+To run the application, you need first to execute `./gradlew clean build`. And then you can execute `docker-compose up`.
 
 ## Application HealthCheck
 
 Application health is visible at `http://localhost:8081/healthcheck`
+
+## Swagger documentation
+
+Swagger documentation is visible at `http://localhost:8080/tournament/swagger`
 
 ## Project Structure
 
