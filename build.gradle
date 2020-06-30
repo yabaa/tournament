@@ -44,6 +44,7 @@ dependencies {
     implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib", version: "$kotlin_version"
     implementation group: "org.mongodb", name: "mongodb-driver-sync", version: "$mongodb_version"
     implementation group: "com.smoketurner", name: "dropwizard-swagger", version: "$swagger_version"
+    implementation group: 'org.jongo', name: 'jongo', version: '1.4.1'
 
     testImplementation group: "io.dropwizard", name: "dropwizard-testing", version: "$dropwizard_version"
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: "$junit_version"

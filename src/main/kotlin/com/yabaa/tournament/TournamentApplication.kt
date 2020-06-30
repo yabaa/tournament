@@ -1,10 +1,11 @@
 package com.yabaa.tournament
 
-import com.yabaa.tournament.resources.PlayerResource
+import com.yabaa.tournament.configuration.ObjectIdSerializer
+import com.yabaa.tournament.daos.PlayerDAO
 import com.yabaa.tournament.database.MongoDBConnectionFactory
 import com.yabaa.tournament.database.MongoDBManaged
 import com.yabaa.tournament.health.TournamentDBHealthCheck
-import com.yabaa.tournament.daos.PlayerDAO
+import com.yabaa.tournament.resources.PlayerResource
 import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
@@ -33,6 +34,7 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
         )
         environment.lifecycle().manage(mongoDBManaged)
         environment.jersey().register(PlayerResource(playerRepository))
+
         environment.healthChecks()
             .register("TournamentDBHealthCheck", TournamentDBHealthCheck(mongoDBManagerConn.getClient()!!)
         )

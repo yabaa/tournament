@@ -121,7 +121,7 @@ class PlayerDAOTest {
         val insertPlayerResult = playerCollection?.insertOne(player)
 
         val playerId = insertPlayerResult?.insertedId!!.asObjectId().value
-        val newPlayer = Player(playerId, "player1", 5)
+        val newPlayer = Player(playerId.toString(), "player1", 5)
 
         val playerRepository = PlayerDAO(playerCollection)
 

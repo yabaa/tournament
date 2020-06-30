@@ -52,7 +52,7 @@ class PlayerResourceTest {
     fun `can GET one player successfully`() {
         //given
         val playerId = ObjectId("5ef8299deace171074fb61ed")
-        Mockito.`when`(playerRepository.getOne(playerId)).thenReturn(PlayerWithRank(playerId, "test", 4, 1))
+        Mockito.`when`(playerRepository.getOne(playerId)).thenReturn(PlayerWithRank(playerId.toString(), "test", 4, 1))
 
         //when
         val response = playerController.target("/players/$playerId").request().get()!!
@@ -103,7 +103,7 @@ class PlayerResourceTest {
     fun `can UPDATE a new successfully`() {
         //given
         val playerId = ObjectId("5ef8299deace171074fb61ed")
-        val player = Player(playerId, "newPlayer", 10)
+        val player = Player(playerId.toString(), "newPlayer", 10)
         Mockito.`when`(playerRepository.update(eq(playerId), any())).thenReturn(player)
 
         //when
@@ -123,7 +123,7 @@ class PlayerResourceTest {
     fun `should return error on UPDATE when any issue occurred`() {
         //given
         val playerId = ObjectId("5ef8299deace171074fb61ed")
-        val player = Player(playerId, "newPlayer", 10)
+        val player = Player(playerId.toString(), "newPlayer", 10)
         Mockito.`when`(playerRepository.update(eq(playerId), any())).thenReturn(null)
 
         //when
