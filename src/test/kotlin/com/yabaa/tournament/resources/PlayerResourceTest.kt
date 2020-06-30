@@ -3,7 +3,7 @@ package com.yabaa.tournament.resources
 import com.mongodb.client.result.DeleteResult
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.api.PlayerWithRank
-import com.yabaa.tournament.repository.PlayerRepository
+import com.yabaa.tournament.daos.PlayerDAO
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport
 import io.dropwizard.testing.junit5.ResourceExtension
 import org.assertj.core.api.Assertions.assertThat
@@ -23,7 +23,7 @@ import javax.ws.rs.core.MediaType
 class PlayerResourceTest {
 
     companion object {
-        val playerRepository = Mockito.mock(PlayerRepository::class.java)!!
+        val playerRepository = Mockito.mock(PlayerDAO::class.java)!!
 
         @ClassRule
         val playerController: ResourceExtension = ResourceExtension.builder()

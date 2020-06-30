@@ -1,4 +1,4 @@
-package com.yabaa.tournament.repository
+package com.yabaa.tournament.daos
 
 import com.mongodb.BasicDBObject
 import com.mongodb.ConnectionString
@@ -18,7 +18,7 @@ import org.testcontainers.containers.wait.strategy.Wait
 import java.io.File
 
 
-class PlayerRepositoryTest {
+class PlayerDAOTest {
     companion object {
         private var playerCollection: MongoCollection<Document>? = null
 
@@ -58,7 +58,7 @@ class PlayerRepositoryTest {
 
         playerCollection?.insertMany(listOf(player1, player2, player3))
 
-        val playerRepository = PlayerRepository(playerCollection)
+        val playerRepository = PlayerDAO(playerCollection)
 
         //when
         val foundPlayers = playerRepository.getAll()
@@ -85,7 +85,7 @@ class PlayerRepositoryTest {
         playerCollection?.insertOne(player2)
         playerCollection?.insertOne(player3)
 
-        val playerRepository = PlayerRepository(playerCollection)
+        val playerRepository = PlayerDAO(playerCollection)
 
         //when
         val foundPlayer = playerRepository.getOne(insertPlayerResult1?.insertedId!!.asObjectId().value)
@@ -101,7 +101,7 @@ class PlayerRepositoryTest {
     fun `can CREATE a new player`() {
         //given
         val player1 = Player(null, "newPlayer", 0)
-        val playerRepository = PlayerRepository(playerCollection)
+        val playerRepository = PlayerDAO(playerCollection)
 
         //when
         val createdPlayerId = playerRepository.create(player1)
@@ -123,7 +123,7 @@ class PlayerRepositoryTest {
         val playerId = insertPlayerResult?.insertedId!!.asObjectId().value
         val newPlayer = Player(playerId, "player1", 5)
 
-        val playerRepository = PlayerRepository(playerCollection)
+        val playerRepository = PlayerDAO(playerCollection)
 
         //when
         val updatedPlayer = playerRepository.update(playerId, newPlayer)

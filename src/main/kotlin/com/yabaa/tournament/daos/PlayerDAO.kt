@@ -1,4 +1,4 @@
-package com.yabaa.tournament.repository
+package com.yabaa.tournament.daos
 
 import com.mongodb.BasicDBObject
 import com.mongodb.client.MongoCollection
@@ -16,7 +16,7 @@ import org.bson.types.ObjectId
 import kotlin.collections.ArrayList
 
 
-open class PlayerRepository(private var players: MongoCollection<Document>? = null) {
+open class PlayerDAO(private var players: MongoCollection<Document>? = null) {
 
     open fun getAll(): List<Player> {
         val sortOrder = orderBy(descending("score"))

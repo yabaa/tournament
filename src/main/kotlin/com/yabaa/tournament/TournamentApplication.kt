@@ -5,7 +5,7 @@ import com.yabaa.tournament.resources.PlayerResource
 import com.yabaa.tournament.database.MongoDBConnectionFactory
 import com.yabaa.tournament.database.MongoDBManaged
 import com.yabaa.tournament.health.TournamentDBHealthCheck
-import com.yabaa.tournament.repository.PlayerRepository
+import com.yabaa.tournament.daos.PlayerDAO
 import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
@@ -27,7 +27,7 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
         println("Running tournament server!")
         val mongoDBManagerConn = MongoDBConnectionFactory(configuration.mongoDBConnection)
         val mongoDBManaged = MongoDBManaged(mongoDBManagerConn.getClient()!!)
-        val playerRepository = PlayerRepository(
+        val playerRepository = PlayerDAO(
             mongoDBManagerConn.getClient()!!
                 .getDatabase(configuration.mongoDBConnection?.database!!)
                 .getCollection("players")

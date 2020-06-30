@@ -1,7 +1,7 @@
 package com.yabaa.tournament.resources
 
 import com.yabaa.tournament.api.Player
-import com.yabaa.tournament.repository.PlayerRepository
+import com.yabaa.tournament.daos.PlayerDAO
 import io.swagger.annotations.Api
 import org.bson.types.ObjectId
 import java.net.URI
@@ -24,12 +24,12 @@ import javax.ws.rs.core.Response
 )
 @Path("/players")
 @Produces(MediaType.APPLICATION_JSON)
-class PlayerResource(private val playerRepository: PlayerRepository? = null) {
+class PlayerResource(private val playerDAO: PlayerDAO? = null) {
 
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     fun create(player: @NotNull Player): Response? {
-        val createdId = playerRepository?.create(player)
+        val createdId = playerDAO?.create(player)
         return if (createdId == null) {
             Response.status(Response.Status.INTERNAL_SERVER_ERROR).build()
         } else {
@@ -41,7 +41,7 @@ class PlayerResource(private val playerRepository: PlayerRepository? = null) {
 
     @GET
     fun getAll(): Response {
-        val all = playerRepository?.getAll()
+        val all = playerDAO?.getAll()
         return if (all!!.isEmpty()) {
             Response.status(Response.Status.NOT_FOUND).entity("No players have been found.").build()
         } else {
@@ -52,7 +52,7 @@ class PlayerResource(private val playerRepository: PlayerRepository? = null) {
     @Path("/{id}")
     @GET
     fun getOne(@PathParam("id") id: @NotNull ObjectId): Response {
-        val one = playerRepository?.getOne(id)
+        val one = playerDAO?.getOne(id)
         return if (one == null) {
             Response.status(Response.Status.NOT_FOUND).entity("Player with id $id not found.").build()
         } else {
@@ -63,7 +63,7 @@ class PlayerResource(private val playerRepository: PlayerRepository? = null) {
     @PUT
     @Path("/{id}")
     fun update(@PathParam("id") id: @NotNull ObjectId, player: @NotNull Player): Response? {
-        val result = playerRepository?.update(id, player)
+        val result = playerDAO?.update(id, player)
         return if (result == null) {
             Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                 .entity("Something went wrong while trying to update player with id $id.")
@@ -75,7 +75,7 @@ class PlayerResource(private val playerRepository: PlayerRepository? = null) {
 
     @DELETE
     fun deleteAll(): Response {
-        val result = playerRepository?.deleteAll()!!
+        val result = playerDAO?.deleteAll()!!
         return if (result.wasAcknowledged()) {
             Response.noContent()
                 .entity("${result.deletedCount} player(s) successfully deleted.")
