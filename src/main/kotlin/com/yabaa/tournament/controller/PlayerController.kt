@@ -2,6 +2,7 @@ package com.yabaa.tournament.controller
 
 import com.yabaa.tournament.model.Player
 import com.yabaa.tournament.repository.PlayerRepository
+import io.swagger.annotations.Api
 import org.bson.types.ObjectId
 import java.net.URI
 import javax.validation.constraints.NotNull
@@ -17,6 +18,10 @@ import javax.ws.rs.core.MediaType
 import javax.ws.rs.core.Response
 
 
+@Api(
+    value = "Player Controller",
+    description = "Player REST API to handle CRUD operations on players collection."
+)
 @Path("/players")
 @Produces(MediaType.APPLICATION_JSON)
 class PlayerController(private val playerRepository: PlayerRepository? = null) {

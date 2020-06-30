@@ -1,6 +1,6 @@
 server:
   maxThreads: 512
-  applicationContextPath: /tournament-service
+  applicationContextPath: /tournament
   applicationConnectors:
     - type: http
       port: 8080
@@ -16,3 +16,11 @@ mongoDBConnection:
     - host: "tournament-mongodb"
       port: 27017
   database: "tournament"
+
+swagger:
+  resourcePackage: com.yabaa.tournament.controller
+  basePath: /tournament
+  title: "Player API"
+  version: v1
+  description: "A simple API used to expose API operations on Player MongoDB collection"
+  scan: true

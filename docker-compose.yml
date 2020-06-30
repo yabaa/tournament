@@ -29,9 +29,9 @@ services:
 
   tournament:
     image: openjdk:8-jre
-    container_name: tournament-service
+    container_name: tournament
     volumes:
-      - ./build/libs/tournament-1.0-SNAPSHOT-standalone.jar:/backend/tournament-1.0.0-SNAPSHOT.jar
+      - ./build/libs/tournament-1.0-SNAPSHOT-all.jar:/backend/tournament-1.0.0-SNAPSHOT.jar
       - ./src/main/resources/application.yml:/backend/application.yml
     working_dir: /backend
     command: ["java", "-jar", "tournament-1.0.0-SNAPSHOT.jar", "server", "application.yml"]
