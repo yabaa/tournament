@@ -102,8 +102,8 @@ class PlayerRepositoryTest {
 
         //then
         Assertions.assertThat(foundPlayer)
-            .extracting("id", "pseudo", "score")
-            .containsExactly("2", "player2", 10)
+            .extracting("id", "pseudo", "score", "rank")
+            .containsExactly("2", "player2", 10, 3)
     }
 
     @Test

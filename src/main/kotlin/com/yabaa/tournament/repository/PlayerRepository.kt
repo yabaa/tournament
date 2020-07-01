@@ -1,6 +1,8 @@
 package com.yabaa.tournament.repository
 
 import com.yabaa.tournament.api.Player
+import com.yabaa.tournament.api.PlayerWithRank
+import com.yabaa.tournament.mapper.PlayerMapper
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
@@ -31,6 +33,10 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
     }
 
     fun getAll(): List<Player> {
+        return getOrderedPlayers()
+    }
+
+    private fun getOrderedPlayers(): List<Player> {
         val scanResponse = dynamoDbClient.scan { scan ->
             scan.tableName("players")
         }
@@ -38,15 +44,19 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
         return scanResponse.items().map { it.toPlayer() }.sortedBy { it.score }.asReversed()
     }
 
-    fun getOne(playerId: String?): Player {
-        val item = dynamoDbClient.getItem(
-            GetItemRequest.builder()
-                .tableName("players")
-                .key(mapOf("id" to AttributeValue.builder().s(playerId!!).build()))
-                .build()
-        ).item()
-
-        return item.toPlayer()
+    fun getOne(playerId: String?): PlayerWithRank? {
+        var player: PlayerWithRank? = null
+        val players = getOrderedPlayers()
+        //TODO: find a better way to rank the player
+        run outside@{
+            players.forEachIndexed { rank, p ->
+                if (p.id == playerId) {
+                    player = PlayerWithRank(playerId, p.pseudo, p.score, rank + 1)
+                    return@outside
+                }
+            }
+        }
+        return player
     }
 
     fun deleteAll() {
