@@ -1,20 +1,20 @@
-package com.yabaa.tournament.helper
+package com.yabaa.tournament.database
 
-import com.yabaa.tournament.api.Player
+import com.mongodb.ServerAddress
+import com.yabaa.tournament.database.configuration.DynamoDBConnection
+import com.yabaa.tournament.database.configuration.Seed
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
-import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
 import software.amazon.awssdk.services.dynamodb.model.KeyType
-import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
 import java.net.URI
+import java.util.stream.Collectors
 
 
-class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
+class DynamoDBConnectionFactory(val dynamoDbClient: DynamoDbClient) {
 
     init {
         setupTable()
@@ -22,40 +22,18 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
 
     companion object {
 
-        fun connect(endpoint: String = "http://localhost:8000"): DynamoDBHelper {
+        fun connect(config: DynamoDBConnection?): DynamoDBConnectionFactory {
+            val server = config?.seeds!!.stream()
+                .map { seed: Seed -> ServerAddress(seed.host, seed.port!!) }
+                .findFirst()
+                .orElse(ServerAddress("localhost", 8080))
 
             val dynamoDbClient = DynamoDbClient.builder()
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(URI.create("http://${server.host}:${server.port}"))
                 .region(Region.EU_WEST_1)
                 .build() ?: throw IllegalStateException()
 
-            return DynamoDBHelper(dynamoDbClient)
-        }
-    }
-
-    fun findById(playerId: String): Player {
-        val item = dynamoDbClient.getItem(
-            GetItemRequest.builder()
-                .tableName("players")
-                .key(mapOf("id" to AttributeValue.builder().s(playerId).build()))
-                .build()
-        ).item()
-
-        return Player(item["id"]!!.s(), item["pseudo"]!!.s(), item["score"]!!.n().toInt())
-    }
-
-    fun save(vararg players: Player) {
-        players.forEach {
-            dynamoDbClient.putItem(
-                PutItemRequest.builder()
-                    .tableName("players")
-                    .item(mapOf(
-                        "id" to AttributeValue.builder().s(it.id.toString()).build(),
-                        "pseudo" to AttributeValue.builder().s(it.pseudo).build(),
-                        "score" to AttributeValue.builder().n(it.score.toString()).build() // default init score
-                    ))
-                    .conditionExpression("attribute_not_exists(task_id)")
-                    .build())
+            return DynamoDBConnectionFactory(dynamoDbClient)
         }
     }
 
@@ -103,4 +81,5 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
             )
         }
     }
+
 }

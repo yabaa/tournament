@@ -5,7 +5,9 @@ import com.yabaa.tournament.daos.KGenericContainer
 import com.yabaa.tournament.helper.DynamoDBHelper
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterAll
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.wait.strategy.Wait
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
@@ -22,6 +24,7 @@ class PlayerRepositoryTest {
 
         var dynamoDbHelper: DynamoDBHelper? = null
         var dynamoDbClient: DynamoDbClient? = null
+        var playerRepository: PlayerRepository? = null
 
         @BeforeAll
         @JvmStatic
@@ -38,17 +41,50 @@ class PlayerRepositoryTest {
         }
     }
 
+    @BeforeEach
+    fun setup() {
+        playerRepository = PlayerRepository(dynamoDbClient!!)
+    }
+
+//    @AfterEach
+//    fun tearDown() {
+//        playerRepository?.deleteAll();
+//    }
+
     @Test
-    internal fun `add Player to DynamoDB`() {
-        val playerId = "5efb38edd39d973add75764b"
-        val player = Player(playerId, "player 1", 0)
+    fun `can create a Player`() {
+        //given
+        val playerId = "12345"
+        val player = Player(playerId, "player5", 0)
 
-        val playerRepository = PlayerRepository(dynamoDbClient!!)
-        playerRepository.create(player)
+        //when
+        playerRepository?.create(player)
 
+        //then
         val storedPlayer = dynamoDbHelper?.findById(playerId)
+        Assertions.assertThat(storedPlayer).isEqualToComparingFieldByField(player)
+    }
 
-        Assertions.assertThat(storedPlayer).isEqualToComparingFieldByField(player);
+    @Test
+    fun `can GET ALL Players sorted by score`() {
+        //given
+        val player1 = Player("1", "player1", 20)
+        val player2 = Player("2", "player2", 10)
+        val player3 = Player("3", "player3", 50)
 
+        dynamoDbHelper?.save(player1, player2, player3)
+
+        //when
+        val foundPlayers = playerRepository?.getAll()
+
+        //then
+        Assertions.assertThat(foundPlayers)
+            .hasSize(3)
+            .extracting("id", "pseudo", "score")
+            .containsExactly(
+                Assertions.tuple("3", "player3", 50),
+                Assertions.tuple("1", "player1", 20),
+                Assertions.tuple("2", "player2", 10)
+            )
     }
 }

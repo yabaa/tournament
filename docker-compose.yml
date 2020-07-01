@@ -16,6 +16,15 @@ services:
     networks:
       - tournament-mongodb-network
 
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    restart: always
+    container_name: tournament-dynamodb
+    ports:
+      - "8000:8000"
+    networks:
+      - tournament-mongodb-network
+
   nginx:
     image: nginx
     container_name: nginx
@@ -38,6 +47,10 @@ services:
     ports:
       - "8090:8080"
       - "8081:8081"
+    environment:
+      AWS_REGION: eu-west1
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
     networks:
       - tournament-mongodb-network
 
