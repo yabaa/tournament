@@ -2,9 +2,13 @@ package com.yabaa.tournament.repository
 
 import com.yabaa.tournament.api.Player
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest
+import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
+import software.amazon.awssdk.services.dynamodb.model.KeyType
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
+import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
 
 class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
 
@@ -42,6 +46,29 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
                 DeleteTableRequest
                     .builder()
                     .tableName("players")
+                    .build()
+            )
+        }
+
+        dynamoDbClient.createTable { builder ->
+            builder.tableName("players")
+
+            builder.provisionedThroughput { provisionedThroughput ->
+                provisionedThroughput.readCapacityUnits(5)
+                provisionedThroughput.writeCapacityUnits(5)
+            }
+
+            builder.keySchema(
+                KeySchemaElement.builder()
+                    .attributeName("id")
+                    .keyType(KeyType.HASH)
+                    .build()
+            )
+
+            builder.attributeDefinitions(
+                AttributeDefinition.builder()
+                    .attributeName("id")
+                    .attributeType(ScalarAttributeType.S)
                     .build()
             )
         }

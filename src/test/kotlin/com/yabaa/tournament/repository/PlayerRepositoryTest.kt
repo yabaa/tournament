@@ -46,16 +46,16 @@ class PlayerRepositoryTest {
         playerRepository = PlayerRepository(dynamoDbClient!!)
     }
 
-//    @AfterEach
-//    fun tearDown() {
-//        playerRepository?.deleteAll();
-//    }
+    @AfterEach
+    fun tearDown() {
+        playerRepository?.deleteAll();
+    }
 
     @Test
     fun `can create a Player`() {
         //given
-        val playerId = "12345"
-        val player = Player(playerId, "player5", 0)
+        val playerId = "1"
+        val player = Player(playerId, "player1", 0)
 
         //when
         playerRepository?.create(player)
@@ -86,5 +86,22 @@ class PlayerRepositoryTest {
                 Assertions.tuple("1", "player1", 20),
                 Assertions.tuple("2", "player2", 10)
             )
+    }
+
+    @Test
+    fun `can DELETE ALL Players`() {
+        //given
+        val player1 = Player("1", "player1", 20)
+        val player2 = Player("2", "player2", 10)
+        val player3 = Player("3", "player3", 50)
+
+        dynamoDbHelper?.save(player1, player2, player3)
+
+        //when
+        playerRepository?.deleteAll()
+
+        //then
+        val foundPlayers = playerRepository?.getAll()
+        Assertions.assertThat(foundPlayers).isEmpty()
     }
 }

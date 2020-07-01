@@ -74,18 +74,12 @@ class PlayerController(private val playerRepository: PlayerRepository? = null) {
 //        }
 //    }
 //
-//    @DELETE
-//    fun deleteAll(): Response {
-//        val result = playerDAO?.deleteAll()!!
-//        return if (result.wasAcknowledged()) {
-//            Response.noContent()
-//                .entity("${result.deletedCount} player(s) successfully deleted.")
-//                .build()
-//        } else {
-//            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//                .entity("Something went wrong while trying to delete all players.")
-//                .build()
-//        }
-//    }
+    @DELETE
+    fun deleteAll(): Response {
+        playerRepository?.deleteAll()
+        return Response.noContent()
+                .entity("Player(s) successfully deleted.")
+                .build()
+    }
 
 }
