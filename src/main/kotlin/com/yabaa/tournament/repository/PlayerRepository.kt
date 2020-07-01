@@ -2,16 +2,17 @@ package com.yabaa.tournament.repository
 
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.api.PlayerWithRank
-import com.yabaa.tournament.mapper.PlayerMapper
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeAction
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.AttributeValueUpdate
 import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest
-import software.amazon.awssdk.services.dynamodb.model.GetItemRequest
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
 import software.amazon.awssdk.services.dynamodb.model.KeyType
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest
 
 class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
 
@@ -36,14 +37,6 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
         return getOrderedPlayers()
     }
 
-    private fun getOrderedPlayers(): List<Player> {
-        val scanResponse = dynamoDbClient.scan { scan ->
-            scan.tableName("players")
-        }
-
-        return scanResponse.items().map { it.toPlayer() }.sortedBy { it.score }.asReversed()
-    }
-
     fun getOne(playerId: String?): PlayerWithRank? {
         var player: PlayerWithRank? = null
         val players = getOrderedPlayers()
@@ -57,6 +50,27 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
             }
         }
         return player
+    }
+
+    fun update(playerId: String?, player: Player?): PlayerWithRank? {
+        val itemKey = mapOf(
+            "id" to AttributeValue.builder().s(playerId!!).build()
+        )
+        val updatedValues = mapOf(
+            "score" to AttributeValueUpdate.builder()
+                .value(AttributeValue.builder().n(player?.score!!.toString()).build())
+                .action(AttributeAction.PUT)
+                .build()
+        )
+
+        dynamoDbClient.updateItem(UpdateItemRequest.builder()
+            .tableName("players")
+            .key(itemKey)
+            .attributeUpdates(updatedValues)
+            .build()
+        )
+
+        return getOne(playerId)
     }
 
     fun deleteAll() {
@@ -95,6 +109,15 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
                     .build()
             )
         }
+    }
+
+    private fun getOrderedPlayers(): List<Player> {
+        return dynamoDbClient.scan { scan ->
+            scan.tableName("players")
+        }.items()
+            .map { it.toPlayer() }
+            .sortedBy { it.score }
+            .asReversed()
     }
 
     private fun MutableMap<String, AttributeValue>.toPlayer() =

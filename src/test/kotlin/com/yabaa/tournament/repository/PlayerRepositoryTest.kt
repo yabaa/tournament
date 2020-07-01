@@ -2,8 +2,11 @@ package com.yabaa.tournament.repository
 
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.daos.KGenericContainer
+import com.yabaa.tournament.daos.PlayerDAO
+import com.yabaa.tournament.daos.PlayerDAOTest
 import com.yabaa.tournament.helper.DynamoDBHelper
 import org.assertj.core.api.Assertions
+import org.bson.Document
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
@@ -122,4 +125,23 @@ class PlayerRepositoryTest {
         val foundPlayers = playerRepository?.getAll()
         Assertions.assertThat(foundPlayers).isEmpty()
     }
+
+    @Test
+    fun `can UPDATE player's score`() {
+        //given
+        val player = Player("1", "player", 0)
+        dynamoDbHelper?.save(player)
+
+        val newPlayer = Player("1", "player", 5)
+
+        //when
+        val updated = playerRepository?.update("1", newPlayer)
+
+        //then
+        Assertions.assertThat(updated)
+            .isNotNull
+            .extracting("id", "pseudo", "score", "rank")
+            .containsExactly("1", "player", 5, 1)
+    }
+
 }

@@ -60,20 +60,20 @@ class PlayerController(private val playerRepository: PlayerRepository? = null) {
             Response.ok(one).build()
         }
     }
-//
-//    @PUT
-//    @Path("/{id}")
-//    fun update(@PathParam("id") id: @NotNull ObjectId, player: @NotNull Player): Response? {
-//        val result = playerDAO?.update(id, player)
-//        return if (result == null) {
-//            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-//                .entity("Something went wrong while trying to update player with id $id.")
-//                .build()
-//        } else {
-//            Response.ok(result).build()
-//        }
-//    }
-//
+
+    @PUT
+    @Path("/{id}")
+    fun update(@PathParam("id") id: @NotNull String, player: @NotNull Player): Response? {
+        val result = playerRepository?.update(id, player)
+        return if (result == null) {
+            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                .entity("Something went wrong while trying to update player with id $id.")
+                .build()
+        } else {
+            Response.ok(result).build()
+        }
+    }
+
     @DELETE
     fun deleteAll(): Response {
         playerRepository?.deleteAll()
