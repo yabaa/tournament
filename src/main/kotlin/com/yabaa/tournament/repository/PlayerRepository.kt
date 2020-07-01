@@ -5,6 +5,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
 import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest
 import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
 import software.amazon.awssdk.services.dynamodb.model.KeyType
 import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
@@ -25,6 +26,7 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
                 .item(item)
                 .conditionExpression("attribute_not_exists(pseudo)")
                 .build())
+
          return player.id!!
     }
 
@@ -34,6 +36,17 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
         }
 
         return scanResponse.items().map { it.toPlayer() }.sortedBy { it.score }.asReversed()
+    }
+
+    fun getOne(playerId: String?): Player {
+        val item = dynamoDbClient.getItem(
+            GetItemRequest.builder()
+                .tableName("players")
+                .key(mapOf("id" to AttributeValue.builder().s(playerId!!).build()))
+                .build()
+        ).item()
+
+        return item.toPlayer()
     }
 
     fun deleteAll() {

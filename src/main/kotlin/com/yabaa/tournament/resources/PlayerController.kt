@@ -49,17 +49,17 @@ class PlayerController(private val playerRepository: PlayerRepository? = null) {
             Response.ok(all).build()
         }
     }
-//
-//    @Path("/{id}")
-//    @GET
-//    fun getOne(@PathParam("id") id: @NotNull ObjectId): Response {
-//        val one = playerDAO?.getOne(id)
-//        return if (one == null) {
-//            Response.status(Response.Status.NOT_FOUND).entity("Player with id $id not found.").build()
-//        } else {
-//            Response.ok(one).build()
-//        }
-//    }
+
+    @Path("/{id}")
+    @GET
+    fun getOne(@PathParam("id") id: @NotNull String): Response {
+        val one = playerRepository?.getOne(id)
+        return if (one == null) {
+            Response.status(Response.Status.NOT_FOUND).entity("Player with id $id not found.").build()
+        } else {
+            Response.ok(one).build()
+        }
+    }
 //
 //    @PUT
 //    @Path("/{id}")

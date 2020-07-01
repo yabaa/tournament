@@ -89,6 +89,24 @@ class PlayerRepositoryTest {
     }
 
     @Test
+    fun `can GET one Player`() {
+        //given
+        val player1 = Player("1", "player1", 20)
+        val player2 = Player("2", "player2", 10)
+        val player3 = Player("3", "player3", 50)
+
+        dynamoDbHelper?.save(player1, player2, player3)
+
+        //when
+        val foundPlayer = playerRepository?.getOne("2")
+
+        //then
+        Assertions.assertThat(foundPlayer)
+            .extracting("id", "pseudo", "score")
+            .containsExactly("2", "player2", 10)
+    }
+
+    @Test
     fun `can DELETE ALL Players`() {
         //given
         val player1 = Player("1", "player1", 20)
