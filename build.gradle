@@ -33,6 +33,7 @@ project.ext {
     testcontainer_version = '1.14.3'
     mockito_version = '3.3.3'
     swagger_version = '2.0.0-1'
+    dynamodb_version = '2.13.47'
 }
 
 repositories {
@@ -45,6 +46,8 @@ dependencies {
     implementation group: "org.mongodb", name: "mongodb-driver-sync", version: "$mongodb_version"
     implementation group: "com.smoketurner", name: "dropwizard-swagger", version: "$swagger_version"
     implementation group: 'org.jongo', name: 'jongo', version: '1.4.1'
+    implementation group: 'software.amazon.awssdk', name: 'dynamodb', version: "$dynamodb_version"
+
 
     testImplementation group: "io.dropwizard", name: "dropwizard-testing", version: "$dropwizard_version"
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: "$junit_version"
@@ -75,4 +78,11 @@ jar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
+}
+
+compileKotlin {
+    kotlinOptions.jvmTarget = "1.8"
+}
+compileTestKotlin {
+    kotlinOptions.jvmTarget = "1.8"
 }

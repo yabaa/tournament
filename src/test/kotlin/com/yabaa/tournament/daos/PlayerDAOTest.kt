@@ -22,7 +22,6 @@ class PlayerDAOTest {
     companion object {
         private var playerCollection: MongoCollection<Document>? = null
 
-
         val instance: KGenericContainer = KGenericContainer(File("./src/test/resources/docker-compose.yml"))
             .withLocalCompose(true)
             .waitingFor("testing-mongodb_1", Wait.forListeningPort())
