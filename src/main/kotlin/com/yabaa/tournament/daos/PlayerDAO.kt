@@ -1,4 +1,4 @@
-package com.yabaa.tournament.repository
+package com.yabaa.tournament.daos
 
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.api.PlayerWithRank
@@ -15,7 +15,7 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest
 
-open class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
+open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
      open fun create(player: Player): String {
         val item = mapOf(

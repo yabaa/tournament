@@ -2,7 +2,7 @@ package com.yabaa.tournament.resources
 
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.api.PlayerWithRank
-import com.yabaa.tournament.repository.PlayerRepository
+import com.yabaa.tournament.daos.PlayerDAO
 import io.dropwizard.testing.junit5.DropwizardExtensionsSupport
 import io.dropwizard.testing.junit5.ResourceExtension
 import org.assertj.core.api.Assertions.assertThat
@@ -22,21 +22,21 @@ import javax.ws.rs.core.MediaType
 class PlayerResourceTest {
 
     companion object {
-        val playerRepository = Mockito.mock(PlayerRepository::class.java)!!
+        val playerDAO = Mockito.mock(PlayerDAO::class.java)!!
 
         @ClassRule
-        val playerController: ResourceExtension = ResourceExtension.builder()
-            .addResource(PlayerController(playerRepository))
+        val playerResource: ResourceExtension = ResourceExtension.builder()
+            .addResource(PlayerResource(playerDAO))
             .build()
     }
 
     @Test
     fun `can GET players successfully`() {
         //given
-        Mockito.`when`(playerRepository.getAll()).thenReturn(listOf(Player("1", "test", 10)))
+        Mockito.`when`(playerDAO.getAll()).thenReturn(listOf(Player("1", "test", 10)))
 
         //when
-        val response = playerController.target("/players2").request().get()!!
+        val response = playerResource.target("/players").request().get()!!
 
         //then
         assertThat(response.status).isEqualTo(200)
@@ -51,10 +51,10 @@ class PlayerResourceTest {
     fun `can GET one player successfully`() {
         //given
         val playerId = "1"
-        Mockito.`when`(playerRepository.getOne(playerId)).thenReturn(PlayerWithRank(playerId, "test", 4, 1))
+        Mockito.`when`(playerDAO.getOne(playerId)).thenReturn(PlayerWithRank(playerId, "test", 4, 1))
 
         //when
-        val response = playerController.target("/players2/$playerId").request().get()!!
+        val response = playerResource.target("/players/$playerId").request().get()!!
 
         //then
         assertThat(response.status).isEqualTo(200)
@@ -68,10 +68,10 @@ class PlayerResourceTest {
     fun `should return NotFound status when player is not found`() {
         //given
         val playerId = "1"
-        Mockito.`when`(playerRepository.getOne(playerId)).thenReturn(null)
+        Mockito.`when`(playerDAO.getOne(playerId)).thenReturn(null)
 
         //when
-        val response = playerController.target("/players2/$playerId").request().get()!!
+        val response = playerResource.target("/players/$playerId").request().get()!!
 
         //then
         val message = response.readEntity(String::class.java)
@@ -84,11 +84,11 @@ class PlayerResourceTest {
         //given
         val playerId = "1"
         val player = Player(playerId, "newPlayer", null)
-        Mockito.`when`(playerRepository.create(any())).thenReturn(playerId)
+        Mockito.`when`(playerDAO.create(any())).thenReturn(playerId)
 
         //when
-        val response = playerController
-            .target("/players2")
+        val response = playerResource
+            .target("/players")
             .request()
             .post(Entity.entity(player, MediaType.APPLICATION_JSON))!!
 
@@ -104,11 +104,11 @@ class PlayerResourceTest {
         val playerId = "1"
         val playerWithRank = PlayerWithRank(playerId, "newPlayer", 10, 1)
         val player = Player(playerId, "newPlayer", 10)
-        Mockito.`when`(playerRepository.update(eq(playerId), any())).thenReturn(playerWithRank)
+        Mockito.`when`(playerDAO.update(eq(playerId), any())).thenReturn(playerWithRank)
 
         //when
-        val response = playerController
-            .target("/players2/$playerId")
+        val response = playerResource
+            .target("/players/$playerId")
             .request()
             .put(Entity.entity(player, MediaType.APPLICATION_JSON))!!
 
@@ -124,11 +124,11 @@ class PlayerResourceTest {
         //given
         val playerId = "1"
         val player = Player(playerId.toString(), "newPlayer", 10)
-        Mockito.`when`(playerRepository.update(eq(playerId), any())).thenReturn(null)
+        Mockito.`when`(playerDAO.update(eq(playerId), any())).thenReturn(null)
 
         //when
-        val response = playerController
-            .target("/players2/$playerId")
+        val response = playerResource
+            .target("/players/$playerId")
             .request()
             .put(Entity.entity(player, MediaType.APPLICATION_JSON))!!
 
@@ -141,11 +141,11 @@ class PlayerResourceTest {
     @Test
     fun `can DELETE all players`() {
         //given
-        doNothing().`when`(playerRepository).deleteAll()
+        doNothing().`when`(playerDAO).deleteAll()
 
         //when
-        val response = playerController
-            .target("/players2")
+        val response = playerResource
+            .target("/players")
             .request()
             .delete()!!
 

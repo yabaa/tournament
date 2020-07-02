@@ -2,8 +2,8 @@ package com.yabaa.tournament
 
 import com.yabaa.tournament.database.DynamoDBConnectionFactory
 import com.yabaa.tournament.health.TournamentDBHealthCheck
-import com.yabaa.tournament.repository.PlayerRepository
-import com.yabaa.tournament.resources.PlayerController
+import com.yabaa.tournament.daos.PlayerDAO
+import com.yabaa.tournament.resources.PlayerResource
 import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
 import io.dropwizard.setup.Environment
@@ -25,7 +25,7 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
         println("Running tournament server!")
         val dynamoDBManagerConn = DynamoDBConnectionFactory.connect(configuration.dynamoDBConnection)
 
-        environment.jersey().register(PlayerController(PlayerRepository(dynamoDBManagerConn.dynamoDbClient)))
+        environment.jersey().register(PlayerResource(PlayerDAO(dynamoDBManagerConn.dynamoDbClient)))
 
         environment.healthChecks()
             .register("TournamentDBHealthCheck", TournamentDBHealthCheck(dynamoDBManagerConn.dynamoDbClient)

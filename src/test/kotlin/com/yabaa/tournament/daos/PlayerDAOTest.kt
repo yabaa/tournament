@@ -1,4 +1,4 @@
-package com.yabaa.tournament.repository
+package com.yabaa.tournament.daos
 
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.helper.DynamoDBHelper
@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import java.io.File
 
 
-class PlayerRepositoryTest {
+class PlayerDAOTest {
 
     companion object {
 
@@ -24,7 +24,7 @@ class PlayerRepositoryTest {
 
         var dynamoDbHelper: DynamoDBHelper? = null
         var dynamoDbClient: DynamoDbClient? = null
-        var playerRepository: PlayerRepository? = null
+        var playerDAO: PlayerDAO? = null
 
         @BeforeAll
         @JvmStatic
@@ -43,12 +43,12 @@ class PlayerRepositoryTest {
 
     @BeforeEach
     fun setup() {
-        playerRepository = PlayerRepository(dynamoDbClient!!)
+        playerDAO = PlayerDAO(dynamoDbClient!!)
     }
 
     @AfterEach
     fun tearDown() {
-        playerRepository?.deleteAll();
+        playerDAO?.deleteAll();
     }
 
     @Test
@@ -58,7 +58,7 @@ class PlayerRepositoryTest {
         val player = Player(playerId, "player1", 0)
 
         //when
-        playerRepository?.create(player)
+        playerDAO?.create(player)
 
         //then
         val storedPlayer = dynamoDbHelper?.findById(playerId)
@@ -75,7 +75,7 @@ class PlayerRepositoryTest {
         dynamoDbHelper?.save(player1, player2, player3)
 
         //when
-        val foundPlayers = playerRepository?.getAll()
+        val foundPlayers = playerDAO?.getAll()
 
         //then
         Assertions.assertThat(foundPlayers)
@@ -98,7 +98,7 @@ class PlayerRepositoryTest {
         dynamoDbHelper?.save(player1, player2, player3)
 
         //when
-        val foundPlayer = playerRepository?.getOne("2")
+        val foundPlayer = playerDAO?.getOne("2")
 
         //then
         Assertions.assertThat(foundPlayer)
@@ -116,10 +116,10 @@ class PlayerRepositoryTest {
         dynamoDbHelper?.save(player1, player2, player3)
 
         //when
-        playerRepository?.deleteAll()
+        playerDAO?.deleteAll()
 
         //then
-        val foundPlayers = playerRepository?.getAll()
+        val foundPlayers = playerDAO?.getAll()
         Assertions.assertThat(foundPlayers).isEmpty()
     }
 
@@ -132,7 +132,7 @@ class PlayerRepositoryTest {
         val newPlayer = Player("1", "player", 5)
 
         //when
-        val updated = playerRepository?.update("1", newPlayer)
+        val updated = playerDAO?.update("1", newPlayer)
 
         //then
         Assertions.assertThat(updated)
