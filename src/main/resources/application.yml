@@ -8,19 +8,16 @@ server:
     - type: http
       port: 8081
 
-mongoDBConnection:
-  credentials:
-    username: "usr_tournament"
-    password: "b3tcl1c"
+dynamoDBConnection:
   seeds:
-    - host: "tournament-mongodb"
-      port: 27017
+    host: "tournament-dynamodb"
+    port: 8000
   database: "tournament"
 
 swagger:
   resourcePackage: com.yabaa.tournament.resources
   basePath: /tournament
-  title: "Player API"
+  title: "Tournament API"
   version: v1
-  description: "A simple API used to expose API operations on Player MongoDB collection"
+  description: "A simple API used to expose API operations on Player DynamoDB collection"
   scan: true

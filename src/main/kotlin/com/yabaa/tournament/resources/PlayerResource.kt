@@ -3,7 +3,6 @@ package com.yabaa.tournament.resources
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.daos.PlayerDAO
 import io.swagger.annotations.Api
-import org.bson.types.ObjectId
 import java.net.URI
 import javax.validation.constraints.NotNull
 import javax.ws.rs.Consumes
@@ -51,7 +50,7 @@ class PlayerResource(private val playerDAO: PlayerDAO? = null) {
 
     @Path("/{id}")
     @GET
-    fun getOne(@PathParam("id") id: @NotNull ObjectId): Response {
+    fun getOne(@PathParam("id") id: @NotNull Int): Response {
         val one = playerDAO?.getOne(id)
         return if (one == null) {
             Response.status(Response.Status.NOT_FOUND).entity("Player with id $id not found.").build()
@@ -62,7 +61,7 @@ class PlayerResource(private val playerDAO: PlayerDAO? = null) {
 
     @PUT
     @Path("/{id}")
-    fun update(@PathParam("id") id: @NotNull ObjectId, player: @NotNull Player): Response? {
+    fun update(@PathParam("id") id: @NotNull Int, player: @NotNull Player): Response? {
         val result = playerDAO?.update(id, player)
         return if (result == null) {
             Response.status(Response.Status.INTERNAL_SERVER_ERROR)
@@ -75,16 +74,10 @@ class PlayerResource(private val playerDAO: PlayerDAO? = null) {
 
     @DELETE
     fun deleteAll(): Response {
-        val result = playerDAO?.deleteAll()!!
-        return if (result.wasAcknowledged()) {
-            Response.noContent()
-                .entity("${result.deletedCount} player(s) successfully deleted.")
+        playerDAO?.deleteAll()
+        return Response.noContent()
+                .entity("Player(s) successfully deleted.")
                 .build()
-        } else {
-            Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                .entity("Something went wrong while trying to delete all players.")
-                .build()
-        }
     }
 
 }

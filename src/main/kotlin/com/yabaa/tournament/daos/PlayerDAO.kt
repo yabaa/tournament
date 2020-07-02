@@ -1,71 +1,147 @@
 package com.yabaa.tournament.daos
 
-import com.mongodb.BasicDBObject
-import com.mongodb.client.MongoCollection
-import com.mongodb.client.MongoCursor
-import com.mongodb.client.model.FindOneAndUpdateOptions
-import com.mongodb.client.model.ReturnDocument
-import com.mongodb.client.model.Sorts.descending
-import com.mongodb.client.model.Sorts.orderBy
-import com.mongodb.client.result.DeleteResult
-import com.yabaa.tournament.mapper.PlayerMapper
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.api.PlayerWithRank
-import org.bson.Document
-import org.bson.types.ObjectId
-import kotlin.collections.ArrayList
+import com.yabaa.tournament.mapper.PlayerMapper.toPlayer
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
+import software.amazon.awssdk.services.dynamodb.model.AttributeAction
+import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
+import software.amazon.awssdk.services.dynamodb.model.AttributeValueUpdate
+import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest
+import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
+import software.amazon.awssdk.services.dynamodb.model.KeyType
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
+import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest
 
+open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
-open class PlayerDAO(private var players: MongoCollection<Document>? = null) {
+    private val tableName = "players"
 
-    open fun getAll(): List<Player> {
-        val sortOrder = orderBy(descending("score"))
-        val players: MongoCursor<Document> = players?.find()!!
-            .sort(sortOrder)
-            .iterator()
-        val playersFound: MutableList<Player> = ArrayList()
-        players.use { p ->
-            while (p.hasNext()) {
-                playersFound.add(PlayerMapper.map(p.next()))
-            }
-        }
-        return playersFound
+     open fun create(player: Player): String {
+         val nextId = getNextId()
+         val item = mapOf(
+            "id" to AttributeValue.builder().n(nextId.toString()).build(),
+            "pseudo" to AttributeValue.builder().s(player.pseudo).build(),
+            "score" to AttributeValue.builder().n("0").build() // default init score
+        )
+
+        dynamoDbClient.putItem(
+            PutItemRequest.builder()
+                .tableName(tableName)
+                .item(item)
+                .conditionExpression("attribute_not_exists(pseudo)")
+                .build())
+
+         return nextId.toString()
     }
 
-    open fun getOne(id: ObjectId): PlayerWithRank? {
-        val sortOrder = orderBy(descending("score"))
-        var rank = 1
+    open fun getAll(): List<Player> {
+        return getOrderedPlayers()
+    }
+
+    open fun getOne(playerId: Int?): PlayerWithRank? {
         var player: PlayerWithRank? = null
-        //TODO: find a better way to rank the player, maybe using aggregate function
-        for (doc in players?.find()!!.sort(sortOrder)) {
-            if (doc.getObjectId("_id") == id) {
-                player = PlayerMapper.mapWithRank(doc, rank)
-                break
+        val players = getOrderedPlayers()
+        run outside@{
+            players.forEachIndexed { rank, p ->
+                if (p.id == playerId) {
+                    player = PlayerWithRank(p.id, p.pseudo, p.score, rank + 1)
+                    return@outside
+                }
             }
-            rank++
         }
         return player
     }
 
-    open fun create(player: Player): ObjectId? {
-        val newPlayer = Document("pseudo", player.pseudo).append("score", 0)
-        val inserted = players?.insertOne(newPlayer)
-        return inserted?.insertedId?.asObjectId()?.value
-    }
-
-    open fun update(id: ObjectId?, player: Player): Player? {
-        val findOneAndUpdate = players?.findOneAndUpdate(
-            Document("_id", id),
-            Document(
-                "\$set", Document("score", player.score)
-            ),
-            FindOneAndUpdateOptions().returnDocument(ReturnDocument.AFTER)
+    open fun update(playerId: Int?, player: Player?): PlayerWithRank? {
+        val itemKey = mapOf(
+            "id" to AttributeValue.builder().n(playerId?.toString()).build()
         )
-        return PlayerMapper.map(findOneAndUpdate!!)
+        val updatedValues = mapOf(
+            "score" to AttributeValueUpdate.builder()
+                .value(AttributeValue.builder().n(player?.score!!.toString()).build())
+                .action(AttributeAction.PUT)
+                .build()
+        )
+
+        dynamoDbClient.updateItem(UpdateItemRequest.builder()
+            .tableName(tableName)
+            .key(itemKey)
+            .attributeUpdates(updatedValues)
+            .build()
+        )
+
+        return getOne(playerId)
     }
 
-    open fun deleteAll(): DeleteResult? {
-        return players?.deleteMany(BasicDBObject())
+    open fun deleteAll() {
+        deleteTable()
+        createTable()
     }
+
+    private fun deleteTable() {
+        val tableExists = dynamoDbClient.listTables()
+            .tableNames()
+            .contains(tableName)
+
+        if (tableExists) {
+            dynamoDbClient.deleteTable(
+                DeleteTableRequest
+                    .builder()
+                    .tableName(tableName)
+                    .build()
+            )
+        }
+    }
+
+    private fun createTable() {
+        dynamoDbClient.createTable { builder ->
+            builder.tableName(tableName)
+
+            builder.provisionedThroughput { provisionedThroughput ->
+                provisionedThroughput.readCapacityUnits(5)
+                provisionedThroughput.writeCapacityUnits(5)
+            }
+
+            builder.keySchema(
+                KeySchemaElement.builder()
+                    .attributeName("id")
+                    .keyType(KeyType.HASH)
+                    .build()
+            )
+
+            builder.attributeDefinitions(
+                AttributeDefinition.builder()
+                    .attributeName("id")
+                    .attributeType(ScalarAttributeType.N)
+                    .build()
+            )
+        }
+    }
+
+    private fun getOrderedPlayers(): List<Player> {
+        return dynamoDbClient.scan { scan ->
+            scan.tableName(tableName)
+        }.items()
+            .map { it.toPlayer() }
+            .sortedBy { it.score }
+            .asReversed()
+    }
+
+    private fun getNextId(): Int {
+        val items = dynamoDbClient.scan { scan ->
+            scan.tableName(tableName)
+            scan.attributesToGet("id")
+        }.items()
+
+        val lastId = items
+            .map { it["id"]!!.n().toInt()  }
+            .max() ?: 0
+
+        return lastId + 1
+    }
+
 
 }

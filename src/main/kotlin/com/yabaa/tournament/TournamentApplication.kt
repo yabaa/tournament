@@ -1,10 +1,8 @@
 package com.yabaa.tournament
 
-import com.yabaa.tournament.configuration.ObjectIdSerializer
-import com.yabaa.tournament.daos.PlayerDAO
-import com.yabaa.tournament.database.MongoDBConnectionFactory
-import com.yabaa.tournament.database.MongoDBManaged
+import com.yabaa.tournament.database.DynamoDBConnectionFactory
 import com.yabaa.tournament.health.TournamentDBHealthCheck
+import com.yabaa.tournament.daos.PlayerDAO
 import com.yabaa.tournament.resources.PlayerResource
 import io.dropwizard.Application
 import io.dropwizard.setup.Bootstrap
@@ -25,18 +23,12 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
 
     override fun run(configuration: TournamentApplicationConfiguration, environment: Environment) {
         println("Running tournament server!")
-        val mongoDBManagerConn = MongoDBConnectionFactory(configuration.mongoDBConnection)
-        val mongoDBManaged = MongoDBManaged(mongoDBManagerConn.getClient()!!)
-        val playerRepository = PlayerDAO(
-            mongoDBManagerConn.getClient()!!
-                .getDatabase(configuration.mongoDBConnection?.database!!)
-                .getCollection("players")
-        )
-        environment.lifecycle().manage(mongoDBManaged)
-        environment.jersey().register(PlayerResource(playerRepository))
+        val dynamoDBManagerConn = DynamoDBConnectionFactory.connect(configuration.dynamoDBConnection)
+
+        environment.jersey().register(PlayerResource(PlayerDAO(dynamoDBManagerConn.dynamoDbClient)))
 
         environment.healthChecks()
-            .register("TournamentDBHealthCheck", TournamentDBHealthCheck(mongoDBManagerConn.getClient()!!)
+            .register("TournamentDBHealthCheck", TournamentDBHealthCheck(dynamoDBManagerConn.dynamoDbClient)
         )
     }
 

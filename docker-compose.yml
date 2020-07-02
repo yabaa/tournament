@@ -1,20 +1,13 @@
 version: '3'
 services:
-  mongodb:
-    image: mongo
+  dynamodb:
+    image: amazon/dynamodb-local:latest
     restart: always
-    container_name: tournament-mongodb
-    environment:
-      MONGO_INITDB_DATABASE: tournament
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
-    volumes:
-      - ./src/main/resources/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
-      - ./mongo-volume:/data/db
+    container_name: tournament-dynamodb
     ports:
-      - 27017:27017
+      - "8000:8000"
     networks:
-      - tournament-mongodb-network
+      - tournament-network
 
   nginx:
     image: nginx
@@ -25,7 +18,7 @@ services:
       - "8080:80"
       - "443:443"
     networks:
-      - tournament-mongodb-network
+      - tournament-network
 
   tournament:
     image: openjdk:8-jre
@@ -38,8 +31,12 @@ services:
     ports:
       - "8090:8080"
       - "8081:8081"
+    environment:
+      AWS_REGION: eu-west1
+      AWS_ACCESS_KEY_ID: dummy
+      AWS_SECRET_ACCESS_KEY: dummy
     networks:
-      - tournament-mongodb-network
+      - tournament-network
 
 networks:
-  tournament-mongodb-network:
+  tournament-network:

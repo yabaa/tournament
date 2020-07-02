@@ -1,39 +1,37 @@
 package com.yabaa.tournament.daos
 
-import com.mongodb.BasicDBObject
-import com.mongodb.ConnectionString
-import com.mongodb.client.MongoClient
-import com.mongodb.client.MongoClients
-import com.mongodb.client.MongoCollection
 import com.yabaa.tournament.api.Player
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.tuple
-import org.bson.Document
+import com.yabaa.tournament.helper.DynamoDBHelper
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.wait.strategy.Wait
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import java.io.File
 
 
 class PlayerDAOTest {
+
     companion object {
-        private var playerCollection: MongoCollection<Document>? = null
 
-
-        val instance: KGenericContainer = KGenericContainer(File("./src/test/resources/docker-compose.yml"))
+        private val instance: KGenericContainer = KGenericContainer(File("./src/test/resources/docker-compose.yml"))
             .withLocalCompose(true)
-            .waitingFor("testing-mongodb_1", Wait.forListeningPort())
+            .waitingFor("dynamo_1", Wait.forListeningPort())
+
+        var dynamoDbHelper: DynamoDBHelper? = null
+        var dynamoDbClient: DynamoDbClient? = null
+        var playerDAO: PlayerDAO? = null
 
         @BeforeAll
         @JvmStatic
         internal fun beforeAll() {
             instance.start()
-            val mongoClient: MongoClient = MongoClients.create(ConnectionString("mongodb://admin:admin@localhost:12345"))
-            val database = mongoClient.getDatabase("testingDB")
-            playerCollection = database.getCollection("players")
+            dynamoDbHelper = DynamoDBHelper.connect()
+            dynamoDbClient = dynamoDbHelper?.dynamoDbClient
         }
 
         @AfterAll
@@ -41,99 +39,109 @@ class PlayerDAOTest {
         internal fun afterAll() {
             instance.stop()
         }
+    }
 
+    @BeforeEach
+    fun setup() {
+        playerDAO = PlayerDAO(dynamoDbClient!!)
     }
 
     @AfterEach
-    internal fun tearDown() {
-        playerCollection?.deleteMany(BasicDBObject())
+    fun tearDown() {
+        playerDAO?.deleteAll();
     }
 
     @Test
-    fun `can GET all players ordered by score`() {
+    fun `can create a Player`() {
         //given
-        val player1 = Document("pseudo", "player1").append("score", 10)
-        val player2 = Document("pseudo", "player2").append("score", 25)
-        val player3 = Document("pseudo", "player3").append("score", 15)
-
-        playerCollection?.insertMany(listOf(player1, player2, player3))
-
-        val playerRepository = PlayerDAO(playerCollection)
+        val player = Player(null, "player1", 0)
 
         //when
-        val foundPlayers = playerRepository.getAll()
+        val playerId = playerDAO?.create(player)
 
         //then
-        assertThat(foundPlayers)
+        val storedPlayer = dynamoDbHelper?.findById(playerId.toString())
+        Assertions.assertThat(storedPlayer)
+            .extracting("id", "pseudo", "score")
+            .containsExactly(1, "player1", 0)
+    }
+
+    @Test
+    fun `can GET ALL Players sorted by score`() {
+        //given
+        val player1 = Player(1, "player1", 20)
+        val player2 = Player(2, "player2", 10)
+        val player3 = Player(3, "player3", 50)
+
+        dynamoDbHelper?.save(player1, player2, player3)
+
+        //when
+        val foundPlayers = playerDAO?.getAll()
+
+        //then
+        Assertions.assertThat(foundPlayers)
             .hasSize(3)
-            .extracting("pseudo", "score")
+            .extracting("id", "pseudo", "score")
             .containsExactly(
-                tuple("player2", 25),
-                tuple("player3", 15),
-                tuple("player1", 10)
+                Assertions.tuple(3, "player3", 50),
+                Assertions.tuple(1, "player1", 20),
+                Assertions.tuple(2, "player2", 10)
             )
     }
 
     @Test
-    fun `can GET one player by his id`() {
+    fun `can GET one Player`() {
         //given
-        val player1 = Document("pseudo", "player1").append("score", 10)
-        val player2 = Document("pseudo", "player2").append("score", 25)
-        val player3 = Document("pseudo", "player3").append("score", 15)
+        val player1 = Player(1, "player1", 20)
+        val player2 = Player(2, "player2", 10)
+        val player3 = Player(3, "player3", 50)
 
-        val insertPlayerResult1 = playerCollection?.insertOne(player1)
-        playerCollection?.insertOne(player2)
-        playerCollection?.insertOne(player3)
-
-        val playerRepository = PlayerDAO(playerCollection)
+        dynamoDbHelper?.save(player1, player2, player3)
 
         //when
-        val foundPlayer = playerRepository.getOne(insertPlayerResult1?.insertedId!!.asObjectId().value)
+        val foundPlayer = playerDAO?.getOne(2)
 
         //then
-        assertThat(foundPlayer)
-            .isNotNull
-            .extracting("pseudo", "score", "rank")
-            .containsExactly("player1", 10, 3)
+        Assertions.assertThat(foundPlayer)
+            .extracting("id", "pseudo", "score", "rank")
+            .containsExactly(2, "player2", 10, 3)
     }
 
     @Test
-    fun `can CREATE a new player`() {
+    fun `can DELETE ALL Players`() {
         //given
-        val player1 = Player(null, "newPlayer", 0)
-        val playerRepository = PlayerDAO(playerCollection)
+        val player1 = Player(1, "player1", 20)
+        val player2 = Player(2, "player2", 10)
+        val player3 = Player(3, "player3", 50)
+
+        dynamoDbHelper?.save(player1, player2, player3)
 
         //when
-        val createdPlayerId = playerRepository.create(player1)
+        playerDAO?.deleteAll()
 
         //then
-        assertThat(createdPlayerId).isNotNull()
-        val createdPlayer = playerRepository.getOne(createdPlayerId!!)
-
-        assertThat(createdPlayer)
-            .isEqualToIgnoringGivenFields(player1, "id", "rank")
+        val foundPlayers = playerDAO?.getAll()
+        Assertions.assertThat(foundPlayers).isEmpty()
     }
 
     @Test
     fun `can UPDATE player's score`() {
         //given
-        val player = Document("pseudo", "player1").append("score", 0)
-        val insertPlayerResult = playerCollection?.insertOne(player)
+        val playerId = 1
+        val player = Player(playerId, "player", 0)
+        dynamoDbHelper?.save(player)
 
-        val playerId = insertPlayerResult?.insertedId!!.asObjectId().value
-        val newPlayer = Player(playerId.toString(), "player1", 5)
-
-        val playerRepository = PlayerDAO(playerCollection)
+        val newPlayer = Player(playerId, "player", 5)
 
         //when
-        val updatedPlayer = playerRepository.update(playerId, newPlayer)
+        val updated = playerDAO?.update(playerId, newPlayer)
 
         //then
-        assertThat(updatedPlayer)
+        Assertions.assertThat(updated)
             .isNotNull
-            .isEqualToComparingFieldByField(newPlayer)
+            .extracting("id", "pseudo", "score", "rank")
+            .containsExactly(playerId, "player", 5, 1)
     }
-
 
 }
 

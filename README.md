@@ -6,7 +6,7 @@ Coding test to manage tournament players and scores.
 
 * Dropwizard 2.0.10
 * Kotlin 1.3.72
-* MongoDB
+* DynamoDB
 * Swagger
 * Docker
 * Gradle
@@ -16,7 +16,7 @@ Coding test to manage tournament players and scores.
 
 To run the application, you need first to execute `./gradlew clean build`. And then you can execute `docker-compose up`.
 
-You can also run `./script.sh` which runs both commands for you, and then visit [swagger url](http://localhost:8080/tournament/swagger).
+You can also run `./start.sh` which runs both commands for you, and then visit [swagger url](http://localhost:8080/tournament/swagger).
 
 ## Application HealthCheck
 
@@ -38,9 +38,9 @@ Within these directories things are organised by package:
 
 * DropWizardConfiguration in `com.yabaa.tournament.configuration`
 * Endpoints definitions in `com.yabaa.tournament.resources`
-* Database configuration (MongoDB) in `com.yabaa.tournament.database`
+* Database configuration (DynamoDB) in `com.yabaa.tournament.database`
 * Database HealthCheck in `com.yabaa.tournament.health`
-* Data transformation from MongoDB document to model `com.yabaa.tournament.mapper`
+* Data transformation from DynamoDB document to model `com.yabaa.tournament.mapper`
 * Entities that are persisted in our database `com.yabaa.tournament.api`
 * Interaction with the database `com.yabaa.tournament.daos`
 * `TournamentApplication` is the starter point for our Dropwizard application
@@ -49,5 +49,4 @@ Within these directories things are organised by package:
 ### Resources
 The `resources` folder contains:
 * Server and Database configuration are in `application.yml`
-* Default MongoDB user creation script in `init-mongo.js`
 
