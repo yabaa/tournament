@@ -17,7 +17,7 @@ dynamoDBConnection:
 swagger:
   resourcePackage: com.yabaa.tournament.resources
   basePath: /tournament
-  title: "Player API"
+  title: "Tournament API"
   version: v1
   description: "A simple API used to expose API operations on Player DynamoDB collection"
   scan: true

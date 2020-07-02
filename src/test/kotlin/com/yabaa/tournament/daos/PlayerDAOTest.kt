@@ -99,7 +99,7 @@ class PlayerDAOTest {
         dynamoDbHelper?.save(player1, player2, player3)
 
         //when
-        val foundPlayer = playerDAO?.getOne("2")
+        val foundPlayer = playerDAO?.getOne(2)
 
         //then
         Assertions.assertThat(foundPlayer)
@@ -127,19 +127,20 @@ class PlayerDAOTest {
     @Test
     fun `can UPDATE player's score`() {
         //given
-        val player = Player(1, "player", 0)
+        val playerId = 1
+        val player = Player(playerId, "player", 0)
         dynamoDbHelper?.save(player)
 
-        val newPlayer = Player(1, "player", 5)
+        val newPlayer = Player(playerId, "player", 5)
 
         //when
-        val updated = playerDAO?.update("1", newPlayer)
+        val updated = playerDAO?.update(playerId, newPlayer)
 
         //then
         Assertions.assertThat(updated)
             .isNotNull
             .extracting("id", "pseudo", "score", "rank")
-            .containsExactly(1, "player", 5, 1)
+            .containsExactly(playerId, "player", 5, 1)
     }
 
 }

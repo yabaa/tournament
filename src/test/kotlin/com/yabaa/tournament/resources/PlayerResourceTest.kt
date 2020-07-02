@@ -51,7 +51,7 @@ class PlayerResourceTest {
     fun `can GET one player successfully`() {
         //given
         val playerId = 1
-        Mockito.`when`(playerDAO.getOne(playerId.toString()))
+        Mockito.`when`(playerDAO.getOne(playerId))
             .thenReturn(PlayerWithRank(playerId, "test", 4, 1))
 
         //when
@@ -68,7 +68,7 @@ class PlayerResourceTest {
     @Test
     fun `should return NotFound status when player is not found`() {
         //given
-        val playerId = "1"
+        val playerId = 1
         Mockito.`when`(playerDAO.getOne(playerId)).thenReturn(null)
 
         //when
@@ -105,7 +105,7 @@ class PlayerResourceTest {
         val playerId = 1
         val playerWithRank = PlayerWithRank(playerId, "newPlayer", 10, 1)
         val player = Player(playerId, "newPlayer", 10)
-        Mockito.`when`(playerDAO.update(eq(playerId.toString()), any())).thenReturn(playerWithRank)
+        Mockito.`when`(playerDAO.update(eq(playerId), any())).thenReturn(playerWithRank)
 
         //when
         val response = playerResource
@@ -125,7 +125,7 @@ class PlayerResourceTest {
         //given
         val playerId = 1
         val player = Player(playerId, "newPlayer", 10)
-        Mockito.`when`(playerDAO.update(eq(playerId.toString()), any())).thenReturn(null)
+        Mockito.`when`(playerDAO.update(eq(playerId), any())).thenReturn(null)
 
         //when
         val response = playerResource
@@ -155,23 +155,6 @@ class PlayerResourceTest {
         val message = response.readEntity(String::class.java)
         assertThat(message).isEqualTo("Player(s) successfully deleted.")
     }
-
-//    @Test
-//    fun `should return error when unable to DELETE all players`() {
-//        //given
-//        Mockito.`when`(playerRepository.deleteAll()).thenReturn(DeleteResult.unacknowledged())
-//
-//        //when
-//        val response = playerController
-//            .target("/players")
-//            .request()
-//            .delete()!!
-//
-//        //then
-//        assertThat(response.status).isEqualTo(500)
-//        val message = response.readEntity(String::class.java)
-//        assertThat(message).isEqualTo("Something went wrong while trying to delete all players.")
-//    }
 
     private fun <T> any(): T {
         return Mockito.any<T>()

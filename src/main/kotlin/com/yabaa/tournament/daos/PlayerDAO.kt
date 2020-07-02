@@ -41,13 +41,12 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
         return getOrderedPlayers()
     }
 
-    open fun getOne(playerId: String?): PlayerWithRank? {
+    open fun getOne(playerId: Int?): PlayerWithRank? {
         var player: PlayerWithRank? = null
         val players = getOrderedPlayers()
-        //TODO: find a better way to rank the player
         run outside@{
             players.forEachIndexed { rank, p ->
-                if (p.id.toString() == playerId) {
+                if (p.id == playerId) {
                     player = PlayerWithRank(p.id, p.pseudo, p.score, rank + 1)
                     return@outside
                 }
@@ -56,9 +55,9 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
         return player
     }
 
-    open fun update(playerId: String?, player: Player?): PlayerWithRank? {
+    open fun update(playerId: Int?, player: Player?): PlayerWithRank? {
         val itemKey = mapOf(
-            "id" to AttributeValue.builder().n(playerId!!).build()
+            "id" to AttributeValue.builder().n(playerId?.toString()).build()
         )
         val updatedValues = mapOf(
             "score" to AttributeValueUpdate.builder()

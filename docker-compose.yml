@@ -7,7 +7,7 @@ services:
     ports:
       - "8000:8000"
     networks:
-      - tournament-mongodb-network
+      - tournament-network
 
   nginx:
     image: nginx
@@ -18,7 +18,7 @@ services:
       - "8080:80"
       - "443:443"
     networks:
-      - tournament-mongodb-network
+      - tournament-network
 
   tournament:
     image: openjdk:8-jre
@@ -36,7 +36,7 @@ services:
       AWS_ACCESS_KEY_ID: dummy
       AWS_SECRET_ACCESS_KEY: dummy
     networks:
-      - tournament-mongodb-network
+      - tournament-network
 
 networks:
-  tournament-mongodb-network:
+  tournament-network:

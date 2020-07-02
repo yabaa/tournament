@@ -50,7 +50,7 @@ class PlayerResource(private val playerDAO: PlayerDAO? = null) {
 
     @Path("/{id}")
     @GET
-    fun getOne(@PathParam("id") id: @NotNull String): Response {
+    fun getOne(@PathParam("id") id: @NotNull Int): Response {
         val one = playerDAO?.getOne(id)
         return if (one == null) {
             Response.status(Response.Status.NOT_FOUND).entity("Player with id $id not found.").build()
@@ -61,7 +61,7 @@ class PlayerResource(private val playerDAO: PlayerDAO? = null) {
 
     @PUT
     @Path("/{id}")
-    fun update(@PathParam("id") id: @NotNull String, player: @NotNull Player): Response? {
+    fun update(@PathParam("id") id: @NotNull Int, player: @NotNull Player): Response? {
         val result = playerDAO?.update(id, player)
         return if (result == null) {
             Response.status(Response.Status.INTERNAL_SERVER_ERROR)
