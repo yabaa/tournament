@@ -26,7 +26,6 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
 
             val dynamoDbClient = DynamoDbClient.builder()
                 .endpointOverride(URI.create(endpoint))
-                .region(Region.EU_WEST_1)
                 .build() ?: throw IllegalStateException()
 
             return DynamoDBHelper(dynamoDbClient)

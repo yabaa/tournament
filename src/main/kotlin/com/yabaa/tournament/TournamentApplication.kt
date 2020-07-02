@@ -25,11 +25,11 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
         println("Running tournament server!")
         val dynamoDBManagerConn = DynamoDBConnectionFactory.connect(configuration.dynamoDBConnection)
 
-        environment.jersey().register(PlayerResource(PlayerDAO(dynamoDBManagerConn.dynamoDbClient)))
+        environment.jersey()
+            .register(PlayerResource(PlayerDAO(dynamoDBManagerConn.dynamoDbClient)))
 
         environment.healthChecks()
-            .register("TournamentDBHealthCheck", TournamentDBHealthCheck(dynamoDBManagerConn.dynamoDbClient)
-        )
+            .register("TournamentDBHealthCheck", TournamentDBHealthCheck(dynamoDBManagerConn.dynamoDbClient))
     }
 
 }

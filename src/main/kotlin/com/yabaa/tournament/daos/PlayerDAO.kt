@@ -17,9 +17,11 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest
 
 open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
-    private val tableName = "players"
+    companion object {
+        private const val TABLE_NAME = "players"
+    }
 
-     open fun create(player: Player): String {
+    open fun create(player: Player): String {
          val nextId = getNextId()
          val item = mapOf(
             "id" to AttributeValue.builder().n(nextId.toString()).build(),
@@ -29,7 +31,7 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
         dynamoDbClient.putItem(
             PutItemRequest.builder()
-                .tableName(tableName)
+                .tableName(TABLE_NAME)
                 .item(item)
                 .conditionExpression("attribute_not_exists(pseudo)")
                 .build())
@@ -67,7 +69,7 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
         )
 
         dynamoDbClient.updateItem(UpdateItemRequest.builder()
-            .tableName(tableName)
+            .tableName(TABLE_NAME)
             .key(itemKey)
             .attributeUpdates(updatedValues)
             .build()
@@ -84,13 +86,13 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
     private fun deleteTable() {
         val tableExists = dynamoDbClient.listTables()
             .tableNames()
-            .contains(tableName)
+            .contains(TABLE_NAME)
 
         if (tableExists) {
             dynamoDbClient.deleteTable(
                 DeleteTableRequest
                     .builder()
-                    .tableName(tableName)
+                    .tableName(TABLE_NAME)
                     .build()
             )
         }
@@ -98,7 +100,7 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
     private fun createTable() {
         dynamoDbClient.createTable { builder ->
-            builder.tableName(tableName)
+            builder.tableName(TABLE_NAME)
 
             builder.provisionedThroughput { provisionedThroughput ->
                 provisionedThroughput.readCapacityUnits(5)
@@ -123,7 +125,7 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
     private fun getOrderedPlayers(): List<Player> {
         return dynamoDbClient.scan { scan ->
-            scan.tableName(tableName)
+            scan.tableName(TABLE_NAME)
         }.items()
             .map { it.toPlayer() }
             .sortedBy { it.score }
@@ -132,7 +134,7 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
     private fun getNextId(): Int {
         val items = dynamoDbClient.scan { scan ->
-            scan.tableName(tableName)
+            scan.tableName(TABLE_NAME)
             scan.attributesToGet("id")
         }.items()
 
@@ -142,6 +144,5 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
         return lastId + 1
     }
-
 
 }

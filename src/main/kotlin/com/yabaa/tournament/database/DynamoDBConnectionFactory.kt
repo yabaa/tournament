@@ -18,15 +18,15 @@ class DynamoDBConnectionFactory(val dynamoDbClient: DynamoDbClient) {
     }
 
     companion object {
+        private const val DEFAULT_URL = "http://localhost:8000"
 
         fun connect(config: DynamoDBConnection?): DynamoDBConnectionFactory {
             val dbEndpoint = ofNullable(config?.seeds!!)
                 .map { seed -> "http://${seed.host}:${seed.port}" }
-                .orElse("http://localhost:8000") //default address
+                .orElse(DEFAULT_URL) //default address
 
             val dynamoDbClient = DynamoDbClient.builder()
                 .endpointOverride(URI.create(dbEndpoint))
-                .region(Region.EU_WEST_1)
                 .build() ?: throw IllegalStateException()
 
             return DynamoDBConnectionFactory(dynamoDbClient)
