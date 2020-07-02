@@ -14,9 +14,9 @@ import software.amazon.awssdk.services.dynamodb.model.PutItemRequest
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
 import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest
 
-class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
+open class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
 
-     fun create(player: Player): String {
+     open fun create(player: Player): String {
         val item = mapOf(
             "id" to AttributeValue.builder().s(player.id.toString()).build(),
             "pseudo" to AttributeValue.builder().s(player.pseudo).build(),
@@ -33,11 +33,11 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
          return player.id!!
     }
 
-    fun getAll(): List<Player> {
+    open fun getAll(): List<Player> {
         return getOrderedPlayers()
     }
 
-    fun getOne(playerId: String?): PlayerWithRank? {
+    open fun getOne(playerId: String?): PlayerWithRank? {
         var player: PlayerWithRank? = null
         val players = getOrderedPlayers()
         //TODO: find a better way to rank the player
@@ -52,7 +52,7 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
         return player
     }
 
-    fun update(playerId: String?, player: Player?): PlayerWithRank? {
+    open fun update(playerId: String?, player: Player?): PlayerWithRank? {
         val itemKey = mapOf(
             "id" to AttributeValue.builder().s(playerId!!).build()
         )
@@ -73,7 +73,7 @@ class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
         return getOne(playerId)
     }
 
-    fun deleteAll() {
+    open fun deleteAll() {
         val tableExists = dynamoDbClient.listTables()
             .tableNames()
             .contains("players")
