@@ -8,15 +8,6 @@ server:
     - type: http
       port: 8081
 
-mongoDBConnection:
-  credentials:
-    username: "usr_tournament"
-    password: "b3tcl1c"
-  seeds:
-    - host: "tournament-mongodb"
-      port: 27017
-  database: "tournament"
-
 dynamoDBConnection:
   credentials:
     username: "usr_tournament"
@@ -25,7 +16,6 @@ dynamoDBConnection:
     - host: "tournament-dynamodb"
       port: 8000
   database: "tournament"
-
 
 swagger:
   resourcePackage: com.yabaa.tournament.resources
