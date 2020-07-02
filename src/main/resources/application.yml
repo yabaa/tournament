@@ -19,5 +19,5 @@ swagger:
   basePath: /tournament
   title: "Player API"
   version: v1
-  description: "A simple API used to expose API operations on Player MongoDB collection"
+  description: "A simple API used to expose API operations on Player DynamoDB collection"
   scan: true

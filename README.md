@@ -6,7 +6,7 @@ Coding test to manage tournament players and scores.
 
 * Dropwizard 2.0.10
 * Kotlin 1.3.72
-* MongoDB
+* DynamoDB
 * Swagger
 * Docker
 * Gradle
@@ -49,5 +49,4 @@ Within these directories things are organised by package:
 ### Resources
 The `resources` folder contains:
 * Server and Database configuration are in `application.yml`
-* Default MongoDB user creation script in `init-mongo.js`
 
