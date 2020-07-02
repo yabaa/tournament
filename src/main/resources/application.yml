@@ -9,10 +9,8 @@ server:
       port: 8081
 
 dynamoDBConnection:
-  seeds:
-    host: "tournament-dynamodb"
-    port: 8000
-  database: "tournament"
+  host: "tournament-dynamodb"
+  port: 8000
 
 swagger:
   resourcePackage: com.yabaa.tournament.resources

@@ -1,7 +1,7 @@
 package com.yabaa.tournament
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.yabaa.tournament.database.configuration.DynamoDBConnection
+import com.yabaa.tournament.database.DynamoDBConnection
 import io.dropwizard.Configuration
 import io.federecio.dropwizard.swagger.SwaggerBundleConfiguration
 

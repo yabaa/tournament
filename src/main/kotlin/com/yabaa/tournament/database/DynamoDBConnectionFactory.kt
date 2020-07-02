@@ -1,7 +1,5 @@
 package com.yabaa.tournament.database
 
-import com.yabaa.tournament.database.configuration.DynamoDBConnection
-import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
 import software.amazon.awssdk.services.dynamodb.model.DeleteTableRequest
@@ -18,12 +16,14 @@ class DynamoDBConnectionFactory(val dynamoDbClient: DynamoDbClient) {
     }
 
     companion object {
-        private const val DEFAULT_URL = "http://localhost:8000"
+        private const val DEFAULT_HOST = "localhost"
+        private const val DEFAULT_PORT = 8000
 
         fun connect(config: DynamoDBConnection?): DynamoDBConnectionFactory {
-            val dbEndpoint = ofNullable(config?.seeds!!)
-                .map { seed -> "http://${seed.host}:${seed.port}" }
-                .orElse(DEFAULT_URL) //default address
+            val host = config?.host ?: DEFAULT_HOST
+            val port = config?.port ?: DEFAULT_PORT
+
+            val dbEndpoint = "http://$host:$port"
 
             val dynamoDbClient = DynamoDbClient.builder()
                 .endpointOverride(URI.create(dbEndpoint))
