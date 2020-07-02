@@ -4,4 +4,5 @@ services:
   dynamo:
     image: amazon/dynamodb-local:latest
     ports:
-      - "8000:8000"
+      - "1234:1234"
+    command: "-jar DynamoDBLocal.jar -port 1234"

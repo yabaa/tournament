@@ -21,8 +21,10 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
     }
 
     companion object {
+        private const val TABLE_NAME = "players"
+        private const val DYNAMO_URL = "http://localhost:1234"
 
-        fun connect(endpoint: String = "http://localhost:8000"): DynamoDBHelper {
+        fun connect(endpoint: String = DYNAMO_URL): DynamoDBHelper {
 
             val dynamoDbClient = DynamoDbClient.builder()
                 .endpointOverride(URI.create(endpoint))
@@ -35,7 +37,7 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
     fun findById(playerId: String): Player {
         val item = dynamoDbClient.getItem(
             GetItemRequest.builder()
-                .tableName("players")
+                .tableName(TABLE_NAME)
                 .key(mapOf("id" to AttributeValue.builder().n(playerId).build()))
                 .build()
         ).item()
@@ -47,7 +49,7 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
         players.forEach {
             dynamoDbClient.putItem(
                 PutItemRequest.builder()
-                    .tableName("players")
+                    .tableName(TABLE_NAME)
                     .item(mapOf(
                         "id" to AttributeValue.builder().n(it.id.toString()).build(),
                         "pseudo" to AttributeValue.builder().s(it.pseudo).build(),
@@ -65,7 +67,7 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
 
     private fun createTable() {
         dynamoDbClient.createTable { builder ->
-            builder.tableName("players")
+            builder.tableName(TABLE_NAME)
 
             builder.provisionedThroughput { provisionedThroughput ->
                 provisionedThroughput.readCapacityUnits(5)
@@ -91,13 +93,13 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
     private fun dropTable() {
         val tableExists = dynamoDbClient.listTables()
             .tableNames()
-            .contains("players")
+            .contains(TABLE_NAME)
 
         if (tableExists) {
             dynamoDbClient.deleteTable(
                 DeleteTableRequest
                     .builder()
-                    .tableName("players")
+                    .tableName(TABLE_NAME)
                     .build()
             )
         }
