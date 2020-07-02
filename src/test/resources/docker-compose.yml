@@ -1,15 +1,7 @@
-version: '3'
+version: '3.1'
+
 services:
-  testing-mongodb:
-    image: mongo
-    restart: always
-    environment:
-      MONGO_INITDB_DATABASE: testingDB
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
-    volumes:
-      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+  dynamo:
+    image: amazon/dynamodb-local:latest
     ports:
-      - 12345:12345
-    command:
-      "mongod --port 12345"
+      - "8000:8000"

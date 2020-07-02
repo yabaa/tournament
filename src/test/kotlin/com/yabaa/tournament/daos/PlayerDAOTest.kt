@@ -18,7 +18,7 @@ class PlayerDAOTest {
 
     companion object {
 
-        val instance: KGenericContainer = KGenericContainer(File("./src/test/resources/dynamodb-docker-compose.yml"))
+        private val instance: KGenericContainer = KGenericContainer(File("./src/test/resources/docker-compose.yml"))
             .withLocalCompose(true)
             .waitingFor("dynamo_1", Wait.forListeningPort())
 
