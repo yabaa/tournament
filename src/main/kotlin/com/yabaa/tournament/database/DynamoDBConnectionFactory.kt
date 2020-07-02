@@ -1,6 +1,5 @@
 package com.yabaa.tournament.database
 
-import com.mongodb.ServerAddress
 import com.yabaa.tournament.database.configuration.DynamoDBConnection
 import com.yabaa.tournament.database.configuration.Seed
 import software.amazon.awssdk.regions.Region
@@ -11,8 +10,7 @@ import software.amazon.awssdk.services.dynamodb.model.KeySchemaElement
 import software.amazon.awssdk.services.dynamodb.model.KeyType
 import software.amazon.awssdk.services.dynamodb.model.ScalarAttributeType
 import java.net.URI
-import java.util.stream.Collectors
-
+import java.util.Optional.ofNullable
 
 class DynamoDBConnectionFactory(val dynamoDbClient: DynamoDbClient) {
 
@@ -23,13 +21,12 @@ class DynamoDBConnectionFactory(val dynamoDbClient: DynamoDbClient) {
     companion object {
 
         fun connect(config: DynamoDBConnection?): DynamoDBConnectionFactory {
-            val server = config?.seeds!!.stream()
-                .map { seed: Seed -> ServerAddress(seed.host, seed.port!!) }
-                .findFirst()
-                .orElse(ServerAddress("localhost", 8080))
+            val dbEndpoint = ofNullable(config?.seeds!!)
+                .map { seed -> "http://${seed.host}:${seed.port}" }
+                .orElse("http://localhost:8000") //default address
 
             val dynamoDbClient = DynamoDbClient.builder()
-                .endpointOverride(URI.create("http://${server.host}:${server.port}"))
+                .endpointOverride(URI.create(dbEndpoint))
                 .region(Region.EU_WEST_1)
                 .build() ?: throw IllegalStateException()
 

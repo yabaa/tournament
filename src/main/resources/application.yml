@@ -9,12 +9,9 @@ server:
       port: 8081
 
 dynamoDBConnection:
-  credentials:
-    username: "usr_tournament"
-    password: "b3tcl1c"
   seeds:
-    - host: "tournament-dynamodb"
-      port: 8000
+    host: "tournament-dynamodb"
+    port: 8000
   database: "tournament"
 
 swagger:

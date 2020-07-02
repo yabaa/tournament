@@ -43,17 +43,13 @@ repositories {
 dependencies {
     implementation group: "io.dropwizard", name: "dropwizard-core", version: "$dropwizard_version"
     implementation group: "org.jetbrains.kotlin", name: "kotlin-stdlib", version: "$kotlin_version"
-    implementation group: "org.mongodb", name: "mongodb-driver-sync", version: "$mongodb_version"
     implementation group: "com.smoketurner", name: "dropwizard-swagger", version: "$swagger_version"
-    implementation group: 'org.jongo', name: 'jongo', version: '1.4.1'
     implementation group: 'software.amazon.awssdk', name: 'dynamodb', version: "$dynamodb_version"
-
 
     testImplementation group: "io.dropwizard", name: "dropwizard-testing", version: "$dropwizard_version"
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-api", version: "$junit_version"
     testImplementation group: "org.junit.jupiter", name: "junit-jupiter-params", version: "$junit_version"
     testImplementation group: "org.assertj", name: "assertj-core", version: "$assertj_version"
-    testImplementation group: "org.testcontainers", name: "mongodb", version: "$testcontainer_version"
     testImplementation group: "org.testcontainers", name: "junit-jupiter", version: "$testcontainer_version"
     testImplementation group: "org.mockito", name: "mockito-core", version: "$mockito_version"
 

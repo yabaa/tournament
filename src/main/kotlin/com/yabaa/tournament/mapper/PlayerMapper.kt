@@ -1,21 +1,11 @@
 package com.yabaa.tournament.mapper
 
 import com.yabaa.tournament.api.Player
-import com.yabaa.tournament.api.PlayerWithRank
-import org.bson.Document
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue
 
 object PlayerMapper {
 
-    fun map(document: Document): Player {
-        return Player(document.getObjectId("_id").toString(), document.getString("pseudo"), document.getInteger("score"))
-    }
+    fun MutableMap<String, AttributeValue>.toPlayer() =
+        Player(this["id"]!!.s(), this["pseudo"]!!.s(), this["score"]!!.n().toInt())
 
-    fun mapWithRank(document: Document, rank: Int): PlayerWithRank {
-        return PlayerWithRank(
-            document.getObjectId("_id").toString(),
-            document.getString("pseudo"),
-            document.getInteger("score"),
-            rank
-        )
-    }
 }

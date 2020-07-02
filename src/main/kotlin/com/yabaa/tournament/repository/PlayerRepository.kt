@@ -2,6 +2,7 @@ package com.yabaa.tournament.repository
 
 import com.yabaa.tournament.api.Player
 import com.yabaa.tournament.api.PlayerWithRank
+import com.yabaa.tournament.mapper.PlayerMapper.toPlayer
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeAction
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
@@ -120,6 +121,5 @@ open class PlayerRepository(private val dynamoDbClient: DynamoDbClient) {
             .asReversed()
     }
 
-    private fun MutableMap<String, AttributeValue>.toPlayer() =
-        Player(this["id"]!!.s(), this["pseudo"]!!.s(), this["score"]!!.n().toInt())
+
 }

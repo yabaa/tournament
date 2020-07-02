@@ -1,6 +1,7 @@
 package com.yabaa.tournament
 
 import com.yabaa.tournament.database.DynamoDBConnectionFactory
+import com.yabaa.tournament.health.TournamentDBHealthCheck
 import com.yabaa.tournament.repository.PlayerRepository
 import com.yabaa.tournament.resources.PlayerController
 import io.dropwizard.Application
@@ -26,9 +27,9 @@ class TournamentApplication : Application<TournamentApplicationConfiguration>() 
 
         environment.jersey().register(PlayerController(PlayerRepository(dynamoDBManagerConn.dynamoDbClient)))
 
-//        environment.healthChecks()
-//            .register("TournamentDBHealthCheck", TournamentDBHealthCheck(mongoDBManagerConn.getClient()!!)
-//        )
+        environment.healthChecks()
+            .register("TournamentDBHealthCheck", TournamentDBHealthCheck(dynamoDBManagerConn.dynamoDbClient)
+        )
     }
 
 }
