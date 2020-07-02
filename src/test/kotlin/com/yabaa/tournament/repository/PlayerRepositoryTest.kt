@@ -1,17 +1,14 @@
 package com.yabaa.tournament.repository
 
 import com.yabaa.tournament.api.Player
-import com.yabaa.tournament.daos.KGenericContainer
-import com.yabaa.tournament.daos.PlayerDAO
-import com.yabaa.tournament.daos.PlayerDAOTest
 import com.yabaa.tournament.helper.DynamoDBHelper
 import org.assertj.core.api.Assertions
-import org.bson.Document
 import org.junit.jupiter.api.AfterAll
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.testcontainers.containers.DockerComposeContainer
 import org.testcontainers.containers.wait.strategy.Wait
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import java.io.File
@@ -145,3 +142,5 @@ class PlayerRepositoryTest {
     }
 
 }
+
+class KGenericContainer(file: File) : DockerComposeContainer<KGenericContainer>(file)
