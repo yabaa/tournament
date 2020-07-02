@@ -33,7 +33,7 @@ class PlayerResourceTest {
     @Test
     fun `can GET players successfully`() {
         //given
-        Mockito.`when`(playerDAO.getAll()).thenReturn(listOf(Player("1", "test", 10)))
+        Mockito.`when`(playerDAO.getAll()).thenReturn(listOf(Player(1, "test", 10)))
 
         //when
         val response = playerResource.target("/players").request().get()!!
@@ -50,8 +50,9 @@ class PlayerResourceTest {
     @Test
     fun `can GET one player successfully`() {
         //given
-        val playerId = "1"
-        Mockito.`when`(playerDAO.getOne(playerId)).thenReturn(PlayerWithRank(playerId, "test", 4, 1))
+        val playerId = 1
+        Mockito.`when`(playerDAO.getOne(playerId.toString()))
+            .thenReturn(PlayerWithRank(playerId, "test", 4, 1))
 
         //when
         val response = playerResource.target("/players/$playerId").request().get()!!
@@ -82,9 +83,9 @@ class PlayerResourceTest {
     @Test
     fun `can POST a new player successfully`() {
         //given
-        val playerId = "1"
-        val player = Player(playerId, "newPlayer", null)
-        Mockito.`when`(playerDAO.create(any())).thenReturn(playerId)
+        val playerId = 1
+        val player = Player(null, "newPlayer", null)
+        Mockito.`when`(playerDAO.create(any())).thenReturn(playerId.toString())
 
         //when
         val response = playerResource
@@ -94,17 +95,17 @@ class PlayerResourceTest {
 
         //then
         assertThat(response.status).isEqualTo(201)
-        val createdId = response.readEntity(String::class.java)
+        val createdId = response.readEntity(Int::class.java)
         assertThat(createdId).isEqualTo(playerId)
     }
 
     @Test
     fun `can UPDATE a new successfully`() {
         //given
-        val playerId = "1"
+        val playerId = 1
         val playerWithRank = PlayerWithRank(playerId, "newPlayer", 10, 1)
         val player = Player(playerId, "newPlayer", 10)
-        Mockito.`when`(playerDAO.update(eq(playerId), any())).thenReturn(playerWithRank)
+        Mockito.`when`(playerDAO.update(eq(playerId.toString()), any())).thenReturn(playerWithRank)
 
         //when
         val response = playerResource
@@ -122,9 +123,9 @@ class PlayerResourceTest {
     @Test
     fun `should return error on UPDATE when any issue occurred`() {
         //given
-        val playerId = "1"
-        val player = Player(playerId.toString(), "newPlayer", 10)
-        Mockito.`when`(playerDAO.update(eq(playerId), any())).thenReturn(null)
+        val playerId = 1
+        val player = Player(playerId, "newPlayer", 10)
+        Mockito.`when`(playerDAO.update(eq(playerId.toString()), any())).thenReturn(null)
 
         //when
         val response = playerResource

@@ -1,7 +1,6 @@
 package com.yabaa.tournament.database
 
 import com.yabaa.tournament.database.configuration.DynamoDBConnection
-import com.yabaa.tournament.database.configuration.Seed
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient
 import software.amazon.awssdk.services.dynamodb.model.AttributeDefinition
@@ -58,7 +57,7 @@ class DynamoDBConnectionFactory(val dynamoDbClient: DynamoDbClient) {
             builder.attributeDefinitions(
                 AttributeDefinition.builder()
                     .attributeName("id")
-                    .attributeType(ScalarAttributeType.S)
+                    .attributeType(ScalarAttributeType.N)
                     .build()
             )
         }

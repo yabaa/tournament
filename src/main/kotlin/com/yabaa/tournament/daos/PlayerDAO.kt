@@ -17,21 +17,24 @@ import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest
 
 open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
+    private val tableName = "players"
+
      open fun create(player: Player): String {
-        val item = mapOf(
-            "id" to AttributeValue.builder().s(player.id.toString()).build(),
+         val nextId = getNextId()
+         val item = mapOf(
+            "id" to AttributeValue.builder().n(nextId.toString()).build(),
             "pseudo" to AttributeValue.builder().s(player.pseudo).build(),
             "score" to AttributeValue.builder().n("0").build() // default init score
         )
 
         dynamoDbClient.putItem(
             PutItemRequest.builder()
-                .tableName("players")
+                .tableName(tableName)
                 .item(item)
                 .conditionExpression("attribute_not_exists(pseudo)")
                 .build())
 
-         return player.id!!
+         return nextId.toString()
     }
 
     open fun getAll(): List<Player> {
@@ -44,8 +47,8 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
         //TODO: find a better way to rank the player
         run outside@{
             players.forEachIndexed { rank, p ->
-                if (p.id == playerId) {
-                    player = PlayerWithRank(playerId, p.pseudo, p.score, rank + 1)
+                if (p.id.toString() == playerId) {
+                    player = PlayerWithRank(p.id, p.pseudo, p.score, rank + 1)
                     return@outside
                 }
             }
@@ -55,7 +58,7 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
     open fun update(playerId: String?, player: Player?): PlayerWithRank? {
         val itemKey = mapOf(
-            "id" to AttributeValue.builder().s(playerId!!).build()
+            "id" to AttributeValue.builder().n(playerId!!).build()
         )
         val updatedValues = mapOf(
             "score" to AttributeValueUpdate.builder()
@@ -65,7 +68,7 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
         )
 
         dynamoDbClient.updateItem(UpdateItemRequest.builder()
-            .tableName("players")
+            .tableName(tableName)
             .key(itemKey)
             .attributeUpdates(updatedValues)
             .build()
@@ -75,21 +78,28 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
     }
 
     open fun deleteAll() {
+        deleteTable()
+        createTable()
+    }
+
+    private fun deleteTable() {
         val tableExists = dynamoDbClient.listTables()
             .tableNames()
-            .contains("players")
+            .contains(tableName)
 
         if (tableExists) {
             dynamoDbClient.deleteTable(
                 DeleteTableRequest
                     .builder()
-                    .tableName("players")
+                    .tableName(tableName)
                     .build()
             )
         }
+    }
 
+    private fun createTable() {
         dynamoDbClient.createTable { builder ->
-            builder.tableName("players")
+            builder.tableName(tableName)
 
             builder.provisionedThroughput { provisionedThroughput ->
                 provisionedThroughput.readCapacityUnits(5)
@@ -106,7 +116,7 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
             builder.attributeDefinitions(
                 AttributeDefinition.builder()
                     .attributeName("id")
-                    .attributeType(ScalarAttributeType.S)
+                    .attributeType(ScalarAttributeType.N)
                     .build()
             )
         }
@@ -114,11 +124,24 @@ open class PlayerDAO(private val dynamoDbClient: DynamoDbClient) {
 
     private fun getOrderedPlayers(): List<Player> {
         return dynamoDbClient.scan { scan ->
-            scan.tableName("players")
+            scan.tableName(tableName)
         }.items()
             .map { it.toPlayer() }
             .sortedBy { it.score }
             .asReversed()
+    }
+
+    private fun getNextId(): Int {
+        val items = dynamoDbClient.scan { scan ->
+            scan.tableName(tableName)
+            scan.attributesToGet("id")
+        }.items()
+
+        val lastId = items
+            .map { it["id"]!!.n().toInt()  }
+            .max() ?: 0
+
+        return lastId + 1
     }
 
 

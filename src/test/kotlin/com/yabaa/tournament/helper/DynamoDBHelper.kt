@@ -37,11 +37,11 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
         val item = dynamoDbClient.getItem(
             GetItemRequest.builder()
                 .tableName("players")
-                .key(mapOf("id" to AttributeValue.builder().s(playerId).build()))
+                .key(mapOf("id" to AttributeValue.builder().n(playerId).build()))
                 .build()
         ).item()
 
-        return Player(item["id"]!!.s(), item["pseudo"]!!.s(), item["score"]!!.n().toInt())
+        return Player(item["id"]!!.n().toInt(), item["pseudo"]!!.s(), item["score"]!!.n().toInt())
     }
 
     fun save(vararg players: Player) {
@@ -50,7 +50,7 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
                 PutItemRequest.builder()
                     .tableName("players")
                     .item(mapOf(
-                        "id" to AttributeValue.builder().s(it.id.toString()).build(),
+                        "id" to AttributeValue.builder().n(it.id.toString()).build(),
                         "pseudo" to AttributeValue.builder().s(it.pseudo).build(),
                         "score" to AttributeValue.builder().n(it.score.toString()).build() // default init score
                     ))
@@ -83,7 +83,7 @@ class DynamoDBHelper(val dynamoDbClient: DynamoDbClient) {
             builder.attributeDefinitions(
                 AttributeDefinition.builder()
                     .attributeName("id")
-                    .attributeType(ScalarAttributeType.S)
+                    .attributeType(ScalarAttributeType.N)
                     .build()
             )
         }
